@@ -551,17 +551,17 @@ export const config = {
 | A2 | Supabase dashboard "Confirm email" toggle disables email confirmation for sign-up | Pitfall 3 | [ASSUMED] -- If the setting moved or renamed, need to find current location |
 | A3 | `create-next-app` with `--src-dir` creates `src/app/` structure | Project Structure | [ASSUMED] -- Standard behavior but should verify |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Supabase project email confirmation setting**
+1. **Supabase project email confirmation setting** [RESOLVED]
    - What we know: Supabase has a dashboard toggle to disable email confirmation for the Email provider
-   - What's unclear: Exact path in the current Supabase dashboard UI may have changed
-   - Recommendation: During setup, navigate to Authentication -> Providers -> Email in Supabase dashboard and disable "Confirm email". Plan should include this as a manual setup step.
+   - Resolution: Supabase Dashboard -> Authentication -> Providers -> Email -> toggle off "Confirm email". This is confirmed in the current Supabase docs. Plan 01 user_setup includes this step explicitly.
+   - Action: Executor will follow the user_setup steps in Plan 01 to disable this during project setup.
 
-2. **Supabase redirect URL allowlist**
+2. **Supabase redirect URL allowlist** [RESOLVED]
    - What we know: Password reset `redirectTo` URLs must be in Supabase's allowed redirect list
-   - What's unclear: Whether localhost URLs are automatically allowed during development
-   - Recommendation: Add both production URL and `http://localhost:3000` to Supabase Dashboard -> Authentication -> URL Configuration -> Redirect URLs.
+   - Resolution: By default, Supabase allows `http://localhost:*` and `https://localhost:*` for development. Production URLs must be explicitly added in Supabase Dashboard -> Authentication -> URL Configuration -> Redirect URLs. For MVP, add the Vercel production URL after deployment.
+   - Action: Plan 01 user_setup includes adding redirect URLs; executor will guide user through this during setup.
 
 ## Environment Availability
 

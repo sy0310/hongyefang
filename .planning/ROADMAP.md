@@ -4,10 +4,17 @@
 
 **Goal:** 搭建 Next.js + Supabase 项目，实现用户注册登录能力。
 **Requirements:** AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05
+**Plans:** 4 plans
+
+Plans:
+- [x] 01-01-PLAN.md — Project scaffold + Supabase SSR three-file infrastructure
+- [x] 01-02-PLAN.md — Auth Server Actions (login, register, logout) + callback route
+- [x] 01-03-PLAN.md — Auth UI components + pages (/login, /reset-password, /update-password, /dashboard)
+- [x] 01-04-PLAN.md — Root layout metadata + home page auth-based redirect
 
 ### Success Criteria
 1. 用户可以用邮箱+密码注册并登录
-2. 用户可以用手机号+验证码注册并登录
+2. 用户可以用手机号+验证码注册并登录 (DEFERRED to later phase)
 3. 登录后刷新页面 session 保持
 4. 用户可以正常登出
 5. 项目可以在本地和 Vercel 上运行
