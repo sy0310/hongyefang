@@ -4,7 +4,7 @@
 
 **Goal:** 搭建 Next.js + Supabase 项目，实现用户注册登录能力。
 **Requirements:** AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 
 Plans:
 - [x] 01-01-PLAN.md — Project scaffold + Supabase SSR three-file infrastructure

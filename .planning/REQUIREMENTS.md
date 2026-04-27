@@ -7,11 +7,11 @@
 
 ### Authentication
 
-- [ ] **AUTH-01**: 用户可以用邮箱+密码注册账号
-- [ ] **AUTH-02**: 用户可以用手机号+验证码注册账号
-- [ ] **AUTH-03**: 用户登录后 session 在刷新后保持
-- [ ] **AUTH-04**: 用户可以登出
-- [ ] **AUTH-05**: 用户可以重置密码
+- [x] **AUTH-01**: 用户可以用邮箱+密码注册账号
+- [x] **AUTH-02**: 用户可以用手机号+验证码注册账号
+- [x] **AUTH-03**: 用户登录后 session 在刷新后保持
+- [x] **AUTH-04**: 用户可以登出
+- [x] **AUTH-05**: 用户可以重置密码
 
 ### AI 创业体检
 
@@ -74,11 +74,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
-| AUTH-05 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
+| AUTH-05 | Phase 1 | Complete |
 | CHAT-01 | Phase 2 | Pending |
 | CHAT-02 | Phase 2 | Pending |
 | CHAT-03 | Phase 2 | Pending |
