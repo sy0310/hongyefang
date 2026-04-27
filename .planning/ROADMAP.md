@@ -25,6 +25,14 @@ Plans:
 
 **Goal:** 实现 AI 对话式创业体检，收集用户四项核心参数。
 **Requirements:** CHAT-01, CHAT-02, CHAT-03, CHAT-04
+**Plans:** 5 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Supabase database tables (assessments + chat_messages) with RLS policies
+- [ ] 02-02-PLAN.md — Core library: types, state machine with follow-up guard, Zod validation, mock AI responses
+- [ ] 02-03-PLAN.md — Chat UI components (MessageBubble, ParameterCard, ChatInput) + dashboard entry button
+- [ ] 02-04-PLAN.md — Streaming API route handler with mock responses and follow-up limit awareness
+- [ ] 02-05-PLAN.md — AssessmentChat container + pages + session resume + chat_messages batch save
 
 ### Success Criteria
 1. 用户可以从登录页进入 AI 对话体检
