@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/app/(auth)/login/actions'
+import { AssessmentEntryButton } from '@/components/dashboard/AssessmentEntryButton'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -18,7 +19,9 @@ export default async function DashboardPage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-lg font-medium mb-2">欢迎，{user?.email}</h2>
-          <p className="text-sm text-gray-500">AI 创业体检功能即将上线，敬请期待。</p>
+          <div className="mt-4">
+            <AssessmentEntryButton />
+          </div>
         </div>
       </main>
     </div>
