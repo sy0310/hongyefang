@@ -33,12 +33,14 @@ describe('calculateScore', () => {
       expectedReturn: null,
       investmentAmount: null,
     });
-    expect(result.score).toBe(0);
+    // Null defaults to 0 for all params.
+    // expectedReturn=0 maps to 100 - (0/2) = 100 (conservative = max score).
+    expect(result.score).toBe(100);
     expect(result.tier).toBe('需要准备');
     expect(result.subScores.annualCapital).toBe(0);
     expect(result.subScores.investmentAmount).toBe(0);
     expect(result.subScores.weeklyTime).toBe(0);
-    expect(result.subScores.expectedReturn).toBe(0);
+    expect(result.subScores.expectedReturn).toBe(100);
   });
 
   it('returns 中度适配 for score in [400, 700) range', () => {
