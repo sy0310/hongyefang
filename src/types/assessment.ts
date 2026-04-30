@@ -10,6 +10,11 @@ export interface Assessment {
   expectedReturn: number | null;
   investmentAmount: number | null;
   status: AssessmentStatus;
+  // Phase 3 additions:
+  score: number | null;
+  tier: Tier | null;
+  isWishingType: boolean | null;
+  aiNarrative: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,3 +40,27 @@ export const PARAMETER_UNITS: Record<ParameterKey, string> = {
   expectedReturn: '%',
   investmentAmount: '万元',
 };
+
+// Phase 3 additions
+export type Tier = '高度适配' | '中度适配' | '需要准备';
+
+export interface ScoringInput {
+  annualCapital: number | null;
+  weeklyTime: number | null;
+  expectedReturn: number | null;
+  investmentAmount: number | null;
+}
+
+export interface SubScores {
+  annualCapital: number;
+  investmentAmount: number;
+  weeklyTime: number;
+  expectedReturn: number;
+}
+
+export interface ScoringResult {
+  score: number;
+  tier: Tier;
+  isWishingType: boolean;
+  subScores: SubScores;
+}
