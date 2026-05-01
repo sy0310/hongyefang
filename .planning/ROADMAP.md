@@ -47,6 +47,12 @@ Plans:
 
 **Goal:** 实现筛选逻辑和评估结果展示页面。
 **Requirements:** EVAL-01, EVAL-02, EVAL-03, RESULT-01, RESULT-02
+**Plans:** 3 plans in 2 waves
+
+Plans:
+- [x] 03-01-PLAN.md — Foundation: migration, deps, types, scoring engine + unit tests (Wave 1)
+- [x] 03-02-PLAN.md — Backend: extended completeAssessment + DeepSeek narrative (Wave 2)
+- [x] 03-03-PLAN.md — UI: result page components + page + loading skeleton (Wave 2)
 
 ### Success Criteria
 1. AI 根据参数生成适配度评分
