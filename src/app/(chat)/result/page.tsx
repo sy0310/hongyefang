@@ -5,6 +5,8 @@ import { DimensionCard } from '@/components/result/DimensionCard';
 import { ResultCTA } from '@/components/result/ResultCTA';
 import { computeSubScores } from '@/lib/scoring/engine';
 
+export const runtime = 'edge'
+
 const DIMENSION_CONFIG = [
   { label: '弹性资金', dbField: 'annual_capital', maxScore: 400, goodTag: '充裕', moderateTag: '良好', lowTag: '偏低', veryLowTag: '不足' },
   { label: '投入金额', dbField: 'investment_amount', maxScore: 300, goodTag: '充足', moderateTag: '适中', lowTag: '偏低', veryLowTag: '不足' },

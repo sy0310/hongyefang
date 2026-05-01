@@ -4,8 +4,7 @@ import { MockLanguageModelV3 } from 'ai/test';
 import { getNextMockResponse, getCompletionMessage } from '@/lib/chat/mock-responses';
 import { PARAMETER_ORDER, type ParameterKey } from '@/lib/chat/state-machine';
 
-// Use Node.js runtime (not Edge) — Supabase server client needs cookies() from next/headers
-// See RESEARCH.md Pitfall 1
+export const runtime = 'edge'
 
 const PARAMETER_MAP: Record<string, ParameterKey> = {
   '年度弹性资金': 'annualCapital',

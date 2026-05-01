@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/app/(auth)/login/actions'
 import { AssessmentEntryButton } from '@/components/dashboard/AssessmentEntryButton'
 
+export const runtime = 'edge'
+
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
