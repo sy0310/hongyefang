@@ -70,9 +70,9 @@ Plans:
 **Plans:** 3 plans in 2 waves
 
 Plans:
-- [ ] 04-01-PLAN.md — Foundation: orders migration, types, createOrder/getOrder Server Actions (Wave 1)
-- [ ] 04-02-PLAN.md — ResultCTA tier-based differentiation + /payment-success confirmation page (Wave 2)
-- [ ] 04-03-PLAN.md — /consult pricing page: PricingCard, PaymentModal, simulated payment flow (Wave 2)
+- [x] 04-01-PLAN.md — Foundation: orders migration, types, createOrder/getOrder Server Actions (Wave 1)
+- [x] 04-02-PLAN.md — ResultCTA tier-based differentiation + /payment-success confirmation page (Wave 2)
+- [x] 04-03-PLAN.md — /consult pricing page: PricingCard, PaymentModal, simulated payment flow (Wave 2)
 
 ### Success Criteria
 1. 评估结果页清晰展示咨询套餐和价格
