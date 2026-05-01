@@ -82,7 +82,7 @@ export default async function ResultPage() {
               {assessment.ai_narrative}
             </p>
           )}
-          <ResultCTA isWishingType={assessment.is_wishing_type ?? false} />
+          <ResultCTA isWishingType={assessment.is_wishing_type ?? false} tier={assessment.tier} />
         </section>
       </div>
     </main>
