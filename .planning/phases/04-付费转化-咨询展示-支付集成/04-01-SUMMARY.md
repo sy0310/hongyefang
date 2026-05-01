@@ -31,9 +31,9 @@ decisions:
   - "No update/delete RLS policies — users never modify orders in MVP"
   - "amount is integer stored in fen/cents; display formatted with ¥ prefix on frontend"
 metrics:
-  duration: "~10 minutes"
-  tasks_completed: 1
-  tasks_blocked: 1
+  duration: "~15 minutes"
+  tasks_completed: 2
+  tasks_blocked: 0
   completed_date: "2026-05-01"
 ---
 
@@ -80,48 +80,14 @@ metrics:
 
 ### Task 2: Apply schema push (supabase db push)
 
-**Status:** Blocked (auth gate)
+**Status:** Complete  
+**Resolution date:** 2026-05-01
 
-**Attempted:** `npx supabase db push` from project root.
-
-**Result:** Exit code 1 — "Cannot find project ref. Have you run supabase link?"
-
-This is an authentication gate. The project has not been linked to a Supabase project (local Docker or remote). The migration file is complete and verified; it just needs to be applied when Supabase is configured.
-
-## Auth Gate
-
-**Task 2** is blocked by Supabase CLI not being linked to a project.
-
-### To resolve:
-
-1. **Get your Supabase project ref** (if using remote Supabase):
-   - Go to Supabase Dashboard -> Settings -> General
-   - Copy the Project Reference ID (e.g., `abcdefghijklmno`)
-
-2. **Set SUPABASE_ACCESS_TOKEN** (or log in interactively):
-   ```bash
-   # Option A: Set env var
-   export SUPABASE_ACCESS_TOKEN="sbp_..."
-   # Get token from: Supabase Dashboard -> Account -> Access Tokens
-
-   # Option B: Interactive login
-   npx supabase login
-   ```
-
-3. **Link the project:**
-   ```bash
-   npx supabase link --project-ref <your-project-ref>
-   ```
-
-4. **OR use local Docker Supabase:**
-   ```bash
-   npx supabase start
-   ```
-
-5. **Re-run schema push:**
-   ```bash
-   npx supabase db push
-   ```
+**Resolved by:** Linked project `nwloqvnsudjxbmymqzor` and ran `npx supabase db push`. All 4 migrations applied:
+- `002_create_assessments.sql`
+- `003_create_chat_messages.sql`
+- `004_assessment_scoring_fields.sql`
+- `005_create_orders.sql`
 
 ## Deviations from Plan
 
@@ -146,7 +112,7 @@ All mitigations from the threat model are implemented:
 - [x] createOrder and getOrder Server Actions are exported from src/lib/orders/actions.ts
 - [x] Server Actions validate authentication and input before database writes
 - [x] All TypeScript compiles with 0 errors
-- [ ] Schema push either succeeds or creates an actionable checkpoint (partial — checkpoint created below)
+- [x] Schema push succeeds — all 4 migrations applied
 
 ## Self-Check
 
