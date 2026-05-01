@@ -78,12 +78,14 @@ No custom CSS variables needed — project uses standard Tailwind 4 scale.
 
 | Role | Tailwind class | Size | Weight | Line Height | Usage |
 |------|---------------|------|--------|-------------|-------|
-| Body | `text-sm` | 14px | 400 | 1.5 | Dimension row labels, narrative paragraph |
-| Label | `text-sm font-medium` | 14px | 500 | 1.4 | Dimension label left column, badge text |
-| Heading | `text-xl font-semibold` | 20px | 600 | 1.3 | Band headings ("您的评估结果") |
+| Body | `text-sm font-normal` | 14px | 400 | 1.5 | Dimension row labels, narrative paragraph |
+| Label | `text-sm font-bold` | 14px | 700 | 1.4 | Dimension label left column, badge text |
+| Heading | `text-xl font-bold` | 20px | 700 | 1.3 | Band headings ("您的评估结果") |
 | Display | `text-4xl font-bold` | 36px | 700 | 1.1 | Overall score number in score banner |
 
 Font family: inherits Geist Sans from `<body>` in root layout. Do not override.
+
+Declared weights: 2 total — `font-normal` (400) and `font-bold` (700).
 
 ---
 
@@ -123,9 +125,9 @@ Structure:
 ```
 <section> — white card, rounded-xl, shadow-sm, p-6
   <p> — "您的创业适配评分" — text-sm text-gray-500
-  <div> — flex items-end gap-3
+  <div> — flex items-end gap-2
     <span> — score number — text-4xl font-bold text-gray-900
-    <span> — tier badge — see badge color map above, text-sm font-medium px-2 py-0.5 rounded-full border
+    <span> — tier badge — see badge color map above, text-sm font-bold px-2 py-1 rounded-full border
   <p> — subtitle line based on tier (see Copywriting Contract) — text-sm text-gray-500 mt-2
 ```
 
@@ -141,8 +143,8 @@ Structure (one row per dimension, stacked vertically with `mb-6` between rows):
 ```
 <div> — mb-6
   <div> — flex justify-between mb-1
-    <span> — dimension label — text-sm font-medium text-gray-700
-    <span> — evaluation tag — text-sm text-gray-500
+    <span> — dimension label — text-sm font-bold text-gray-700
+    <span> — evaluation tag — text-sm font-normal text-gray-500
   <div> — h-2 bg-gray-100 rounded-full overflow-hidden
     <div> — h-full bg-blue-600 rounded-full — style={{ width: `${pct}%` }} — (inline style, NOT dynamic Tailwind class — see RESEARCH.md Pitfall 3)
 ```
@@ -171,7 +173,7 @@ Each dimension uses its own contextually appropriate vocabulary:
 ### 3. NarrativeParagraph (no separate component needed — inline in result page)
 
 Render as a `<p>` element within the bottom band:
-- `text-sm text-gray-700 leading-relaxed whitespace-pre-wrap`
+- `text-sm font-normal text-gray-700 leading-relaxed whitespace-pre-wrap`
 - No box/card border — plain text on white surface
 
 ### 4. ResultCTA
@@ -308,8 +310,8 @@ No shadcn. No third-party component registries. All UI built from Tailwind utili
 - [ ] Dimension 1 Copywriting: PASS
 - [ ] Dimension 2 Visuals: PASS
 - [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
+- [ ] Dimension 4 Typography: previously FAIL (4 weights) — fixed: collapsed to 2 weights (400, 700)
+- [ ] Dimension 5 Spacing: previously FAIL (py-0.5 = 2px, gap-3 = 12px) — fixed: py-0.5 → py-1 (4px), gap-3 → gap-2 (8px)
 - [ ] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** pending — revised 2026-04-29, awaiting re-verification
