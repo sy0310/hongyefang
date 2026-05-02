@@ -12,7 +12,7 @@ export function Tabs({ value, onValueChange, children }: TabsProps) {
 
 interface TabsListProps { children: React.ReactNode }
 export function TabsList({ children }: TabsListProps) {
-  return <div className="flex border-b border-gray-200">{children}</div>
+  return <div className="flex border-b border-border/50">{children}</div>
 }
 
 interface TabsTriggerProps {
@@ -25,8 +25,8 @@ export function TabsTrigger({ value, activeValue, onClick, children }: TabsTrigg
   const isActive = value === activeValue
   return (
     <button
-      className={`flex-1 py-2 text-sm font-medium border-b-2 transition-colors
-        ${isActive ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+      className={`flex-1 py-3 text-sm font-semibold border-b-2 transition-all duration-200
+        ${isActive ? 'border-primary text-primary' : 'border-transparent text-foreground/40 hover:text-foreground/60'}`}
       onClick={onClick}
       type="button"
     >

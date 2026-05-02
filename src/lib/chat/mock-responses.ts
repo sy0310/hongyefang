@@ -1,6 +1,6 @@
 import { PARAMETER_LABELS, PARAMETER_UNITS, type ParameterKey } from '@/types/assessment';
 
-const WELCOME_MESSAGE = '你好！我是红叶坊AI创业顾问。我将通过几个简单问题，帮你梳理创业条件。请随时回答，我会根据你的回答调整建议。';
+const WELCOME_MESSAGE = '你好！我是弘业坊AI创业顾问。我将通过几个简单问题，帮你梳理创业条件。请随时回答，我会根据你的回答调整建议。';
 
 const PARAMETER_PROMPTS: Record<ParameterKey, string> = {
   annualCapital: '首先，请问你每年大概有多少可以灵活支配的创业资金？（单位：万元）',

@@ -8,7 +8,7 @@ const geistSans = Geist({
 })
 
 export const metadata: Metadata = {
-  title: '红叶坊 -- AI 精准筛选优质创业项目',
+  title: '弘业坊 -- AI 精准筛选优质创业项目',
   description: 'AI 精准筛选优质创业用户，降低无效沟通成本，让有价值的创业咨询高效匹配。',
 }
 
