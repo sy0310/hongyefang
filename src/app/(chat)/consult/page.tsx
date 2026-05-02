@@ -43,20 +43,20 @@ const PLANS = [
 
 export default function ConsultPage() {
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-12">
-      <div className="max-w-[960px] mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-xl font-bold text-gray-900">人工咨询服务</h1>
-          <p className="text-sm text-gray-500 mt-2">
-            根据您的创业评估结果，我们为您推荐以下咨询方案
+    <main className="min-h-screen bg-background px-4 py-16">
+      <div className="max-w-[1000px] mx-auto">
+        <header className="text-center mb-16">
+          <h1 className="text-4xl font-black text-foreground mb-4">人工咨询服务</h1>
+          <p className="text-lg font-medium text-foreground/60 max-w-2xl mx-auto leading-relaxed">
+            根据您的创业评估结果，我们为您精选了以下咨询方案，助您更稳健地开启创业之旅。
           </p>
         </header>
 
         <ConsultClient plans={PLANS} />
 
-        <footer className="text-center mt-8">
-          <p className="text-sm text-gray-400">
-            所有咨询服务均通过线上进行。支付完成后，专员将在24小时内与您联系。
+        <footer className="text-center mt-16 border-t border-border/50 pt-8">
+          <p className="text-sm font-medium text-foreground/40 italic">
+            所有咨询服务均通过线上进行。支付完成后，我们的专业顾问将在 24 小时内与您取得联系。
           </p>
         </footer>
       </div>

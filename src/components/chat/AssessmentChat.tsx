@@ -177,22 +177,22 @@ export function AssessmentChat() {
   // Session resume prompt UI
   if (showResumePrompt) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">继续上次对话？</h2>
-          <p className="text-sm text-gray-600 mb-4">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background px-4">
+        <div className="max-w-md w-full bg-card rounded-2xl shadow-sm border border-border/50 p-8 text-center">
+          <h2 className="text-xl font-bold text-foreground mb-2">继续上次对话？</h2>
+          <p className="text-sm text-foreground/60 mb-6">
             检测到您之前有一次未完成的创业体检，是否继续？
           </p>
           <div className="flex gap-3 justify-center">
             <button
               onClick={handleResume}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
+              className="px-6 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity"
             >
               继续
             </button>
             <button
               onClick={handleStartFresh}
-              className="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200"
+              className="px-6 py-2 bg-foreground/5 text-foreground/70 text-sm font-semibold rounded-lg hover:bg-foreground/10 transition-colors"
             >
               重新开始
             </button>
@@ -203,9 +203,9 @@ export function AssessmentChat() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="border-b border-gray-200 bg-white px-4 py-3">
-        <h1 className="text-sm font-medium text-gray-900">AI 创业体检</h1>
+    <div className="flex flex-col min-h-screen bg-background">
+      <div className="border-b border-border/50 bg-card px-4 py-4">
+        <h1 className="text-sm font-bold text-primary tracking-wide uppercase">AI 创业体检</h1>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">

@@ -14,8 +14,9 @@ export function ResultCTA({ isWishingType, tier }: ResultCTAProps) {
   const { label, variant } = getCTADetails(isWishingType, tier);
 
   return (
-    <div className="mt-8">
-      <Button variant={variant} onClick={() => router.push('/consult')}>
+    <div className="mt-12 p-8 bg-primary/5 rounded-2xl border border-primary/10">
+      <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-4 text-center">下一步建议</h3>
+      <Button variant={variant} onClick={() => router.push('/consult')} className="py-4 text-base font-bold shadow-xl shadow-primary/20">
         {label}
       </Button>
     </div>

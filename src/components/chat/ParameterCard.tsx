@@ -17,9 +17,10 @@ export function ParameterCard({ parameterKey, value, onSubmit }: ParameterCardPr
 
   if (value !== null) {
     return (
-      <div className="my-2 mx-auto max-w-sm p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
-        <span className="text-sm text-emerald-700">
-          {PARAMETER_LABELS[parameterKey]}: <strong>{value}</strong> {PARAMETER_UNITS[parameterKey]}
+      <div className="my-4 mx-auto max-w-sm p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+        <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-400 flex items-center gap-2">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+          {PARAMETER_LABELS[parameterKey]}: {value} {PARAMETER_UNITS[parameterKey]}
         </span>
       </div>
     );
@@ -47,23 +48,25 @@ export function ParameterCard({ parameterKey, value, onSubmit }: ParameterCardPr
   };
 
   return (
-    <div className="my-2 mx-auto max-w-sm p-4 bg-blue-50 border border-blue-200 rounded-lg">
-      <p className="text-sm font-medium text-blue-800 mb-2">{PARAMETER_LABELS[parameterKey]}</p>
-      <form onSubmit={handleSubmit} className="flex gap-2 items-end">
-        <div className="flex-1">
+    <div className="my-4 mx-auto max-w-sm p-6 bg-card border border-primary/20 rounded-2xl shadow-md">
+      <p className="text-sm font-bold text-foreground mb-4">{PARAMETER_LABELS[parameterKey]}</p>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="relative">
           <input
             type="number"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="请输入..."
-            className={`w-full px-3 py-2 border rounded-md text-sm ${
-              error ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            placeholder="请输入数值..."
+            className={`w-full pr-12 pl-4 py-3 bg-background border rounded-xl text-base font-medium transition-all ${
+              error ? 'border-red-500 ring-1 ring-red-500' : 'border-border focus:border-primary focus:ring-2 focus:ring-primary/20'
+            } focus:outline-none`}
           />
-          {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-foreground/40">
+            {PARAMETER_UNITS[parameterKey]}
+          </span>
         </div>
-        <span className="text-sm text-gray-500 pb-2">{PARAMETER_UNITS[parameterKey]}</span>
-        <Button type="submit" variant="primary" className="w-auto px-4">确认</Button>
+        {error && <p className="text-xs text-red-600 font-medium px-1">{error}</p>}
+        <Button type="submit" variant="primary" className="py-3 font-bold shadow-lg shadow-primary/20">确认提交</Button>
       </form>
     </div>
   );

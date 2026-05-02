@@ -34,10 +34,10 @@ export function DimensionCard({
   }
 
   return (
-    <div className="mb-6">
-      <div className="flex justify-between mb-1">
-        <span className="text-sm font-bold text-gray-700">{label}</span>
-        <span className="text-sm font-normal text-gray-500">{tag}</span>
+    <div className="mb-8">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-sm font-bold text-foreground/80">{label}</span>
+        <span className="text-xs font-bold text-primary uppercase tracking-tight">{tag}</span>
       </div>
       <div
         role="progressbar"
@@ -45,10 +45,10 @@ export function DimensionCard({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label={`${label} ${clampedPct}%`}
-        className="h-2 bg-gray-100 rounded-full overflow-hidden"
+        className="h-2.5 bg-foreground/5 rounded-full overflow-hidden"
       >
         <div
-          className="h-full bg-blue-600 rounded-full transition-all"
+          className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
           style={{ width: `${clampedPct}%` }}
         />
       </div>

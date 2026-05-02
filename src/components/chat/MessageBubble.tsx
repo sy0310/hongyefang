@@ -12,10 +12,10 @@ export function MessageBubble({ role, content, isStreaming }: MessageBubbleProps
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
       <div
-        className={`max-w-[80%] px-4 py-2 text-sm rounded-2xl ${
+        className={`max-w-[85%] px-4 py-3 text-sm leading-relaxed shadow-sm ${
           isUser
-            ? 'bg-blue-600 text-white rounded-br-sm'
-            : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm'
+            ? 'bg-primary text-white rounded-2xl rounded-br-none font-medium'
+            : 'bg-card border border-border/50 text-foreground rounded-2xl rounded-bl-none'
         }`}
       >
         <p className="whitespace-pre-wrap">{content}</p>

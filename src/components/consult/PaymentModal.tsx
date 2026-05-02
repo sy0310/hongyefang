@@ -66,26 +66,26 @@ export function PaymentModal({
       <div className="absolute inset-0 bg-black/50" />
 
       {/* Modal card */}
-      <div className="relative bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
-        <h3 className="text-lg font-bold text-gray-900 text-center">确认支付</h3>
+      <div className="relative bg-card rounded-2xl shadow-2xl max-w-sm w-full p-8 border border-border/50">
+        <h3 className="text-xl font-black text-foreground text-center">确认支付</h3>
 
-        <div className="mt-6 space-y-3">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-500">套餐</span>
-            <span className="text-gray-900 font-bold">{planName}</span>
+        <div className="mt-8 space-y-4">
+          <div className="flex justify-between items-center text-sm">
+            <span className="font-bold text-foreground/40 uppercase tracking-widest">套餐</span>
+            <span className="text-foreground font-black">{planName}</span>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-500">金额</span>
-            <span className="text-gray-900 font-bold text-lg">
+          <div className="flex justify-between items-center text-sm">
+            <span className="font-bold text-foreground/40 uppercase tracking-widest">应付金额</span>
+            <span className="text-primary font-black text-2xl tracking-tighter">
               ¥{amount.toLocaleString()}
             </span>
           </div>
         </div>
 
         {/* Simulated payment notice */}
-        <div className="mt-2 p-3 bg-amber-50 rounded-lg text-xs text-amber-700">
-          当前为模拟支付，不会产生实际扣款。
-          正式上线后将接入微信支付/支付宝。
+        <div className="mt-6 p-4 bg-primary/5 rounded-xl text-xs font-medium text-primary/80 leading-relaxed border border-primary/10">
+          当前为测试环境模拟支付，不会产生实际扣款。
+          正式上线后将支持微信支付及支付宝。
         </div>
 
         {/* Error state */}

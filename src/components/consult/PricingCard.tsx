@@ -19,35 +19,35 @@ export function PricingCard({
 }: PricingCardProps) {
   return (
     <article
-      className={`relative bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between min-h-full ${
+      className={`relative bg-card rounded-2xl shadow-sm p-8 flex flex-col justify-between min-h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
         isRecommended
-          ? 'border-2 border-amber-400 ring-1 ring-amber-400'
-          : 'border border-gray-100'
+          ? 'border-2 border-primary ring-4 ring-primary/5'
+          : 'border border-border/50'
       }`}
       aria-label={`${name} 套餐, ¥${price.toLocaleString()}`}
     >
       {isRecommended && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-50 border border-amber-400 text-amber-700 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-black px-4 py-1 rounded-full whitespace-nowrap uppercase tracking-widest shadow-lg shadow-primary/30">
           推荐方案
         </span>
       )}
 
       <div>
-        <h3 className="text-lg font-bold text-gray-900">{name}</h3>
+        <h3 className="text-xl font-black text-foreground mb-4">{name}</h3>
 
-        <div className="flex items-baseline gap-1 mt-2">
-          <span className="text-base font-normal text-gray-500">¥</span>
-          <span className="text-3xl font-bold text-gray-900">{price.toLocaleString()}</span>
-          <span className="text-base font-normal text-gray-500">元</span>
+        <div className="flex items-baseline gap-1">
+          <span className="text-sm font-bold text-foreground/40">¥</span>
+          <span className="text-4xl font-black text-foreground tracking-tighter">{price.toLocaleString()}</span>
+          <span className="text-sm font-bold text-foreground/40">/ 套餐</span>
         </div>
 
-        <p className="text-sm text-gray-500 mt-2">{description}</p>
+        <p className="text-sm font-medium text-foreground/60 mt-4 leading-relaxed">{description}</p>
 
-        <ul className="mt-6 space-y-3">
+        <ul className="mt-8 space-y-4">
           {features.map((feature, index) => (
-            <li key={index} className="flex items-start gap-2 text-sm text-gray-700">
+            <li key={index} className="flex items-start gap-3 text-sm font-medium text-foreground/80">
               <svg
-                className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5"
+                className="w-5 h-5 text-primary flex-shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

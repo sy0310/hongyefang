@@ -7,9 +7,9 @@ interface ScoreBannerProps {
 }
 
 const TIER_BADGE_STYLES: Record<string, string> = {
-  '高度适配': 'bg-emerald-50 border border-emerald-200 text-emerald-700',
-  '中度适配': 'bg-amber-50 border border-amber-200 text-amber-700',
-  '需要准备': 'bg-gray-100 border border-gray-200 text-gray-600',
+  '高度适配': 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400',
+  '中度适配': 'bg-primary/10 border-primary/20 text-primary',
+  '需要准备': 'bg-foreground/5 border-foreground/10 text-foreground/60',
 };
 
 const SUBTITLES: Record<string, string> = {
@@ -24,28 +24,29 @@ export function ScoreBanner({ score, tier, isWishingType }: ScoreBannerProps) {
     : SUBTITLES[tier];
 
   return (
-    <section className="bg-white rounded-xl shadow-sm p-6">
-      <p className="text-sm text-gray-500 mb-2">您的创业适配评分</p>
-      <div className="flex items-end gap-2">
+    <section className="bg-card rounded-2xl border border-border/50 shadow-sm p-8 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl" />
+      <p className="text-sm font-bold text-foreground/40 mb-3 uppercase tracking-wider">您的创业适配评分</p>
+      <div className="flex items-center gap-4">
         <span
-          className="text-4xl font-bold text-gray-900"
+          className="text-6xl font-black text-primary"
           aria-label={`综合评分 ${score} 分`}
         >
           {score}
         </span>
         <span
           role="status"
-          className={`text-sm font-bold px-2 py-1 rounded-full border ${TIER_BADGE_STYLES[tier]}`}
+          className={`text-xs font-bold px-3 py-1 rounded-lg border uppercase tracking-wide ${TIER_BADGE_STYLES[tier]}`}
         >
           {tier}
         </span>
       </div>
       {isWishingType && (
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-xs font-medium text-primary/60 mt-2 italic">
           （参考分数，综合适配等级以标签为准）
         </p>
       )}
-      <p className="text-sm text-gray-500 mt-2">{subtitle}</p>
+      <p className="text-base font-medium text-foreground/80 mt-4 leading-relaxed max-w-md">{subtitle}</p>
     </section>
   );
 }

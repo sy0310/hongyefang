@@ -14,7 +14,7 @@ export default function LoginPage() {
         <div className="bg-card rounded-2xl shadow-sm border border-border/50 p-8">
           <AuthTabs />
           <div className="mt-4 text-center">
-            <Link href="/reset-password" className="text-sm text-blue-600 hover:underline">忘记密码？</Link>
+            <Link href="/reset-password" university-style className="text-sm text-primary hover:underline font-medium">忘记密码？</Link>
           </div>
         </div>
       </div>
