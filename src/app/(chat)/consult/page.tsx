@@ -1,4 +1,5 @@
 import { ConsultClient } from './ConsultClient';
+import { BottomNav } from '@/components/ui/BottomNav';
 
 const PLANS = [
   {
@@ -43,23 +44,35 @@ const PLANS = [
 
 export default function ConsultPage() {
   return (
-    <main className="min-h-screen bg-background px-4 py-16">
-      <div className="max-w-[1000px] mx-auto">
-        <header className="text-center mb-16">
-          <h1 className="text-4xl font-black text-foreground mb-4">人工咨询服务</h1>
-          <p className="text-lg font-medium text-foreground/60 max-w-2xl mx-auto leading-relaxed">
-            根据您的创业评估结果，我们为您精选了以下咨询方案，助您更稳健地开启创业之旅。
-          </p>
-        </header>
+    <div className="flex-1 pb-24 bg-background">
+      <header className="px-6 pt-12 pb-8">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
+            <span className="text-primary text-[10px] font-black uppercase">Vip</span>
+          </div>
+          <h2 className="text-xs font-black text-primary uppercase tracking-[0.2em]">咨询服务 (Consulting)</h2>
+        </div>
+        <h1 className="text-3xl font-black text-foreground mb-3 leading-tight">量身定制的<br/>创业辅导方案</h1>
+        <p className="text-[13px] text-muted italic leading-relaxed">
+          基于您的评估结果，我们为您匹配了以下梯度服务，助您规避风险。
+        </p>
+      </header>
 
+      <div className="px-6">
         <ConsultClient plans={PLANS} />
-
-        <footer className="text-center mt-16 border-t border-border/50 pt-8">
-          <p className="text-sm font-medium text-foreground/40 italic">
-            所有咨询服务均通过线上进行。支付完成后，我们的专业顾问将在 24 小时内与您取得联系。
-          </p>
-        </footer>
       </div>
-    </main>
+
+      <footer className="px-10 py-12 text-center space-y-4">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 mb-2">
+          <span className="text-muted text-xs">?</span>
+        </div>
+        <p className="text-[11px] text-muted italic leading-relaxed">
+          支付完成后，专属顾问将在 24 小时内通过系统消息与您联系。<br/>
+          如有疑问，请咨询 <span className="text-foreground underline">在线客服</span>。
+        </p>
+      </footer>
+      
+      <BottomNav />
+    </div>
   );
 }

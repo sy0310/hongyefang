@@ -20,6 +20,7 @@ import {
   saveChatMessages,
   completeAssessment,
 } from '@/app/(chat)/assessment/actions';
+import { Zap } from 'lucide-react';
 
 const PARAMETER_KEY_TO_DB_COLUMN: Record<ParameterKey, string> = {
   annualCapital: 'annual_capital',
@@ -203,12 +204,32 @@ export function AssessmentChat() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="border-b border-border/50 bg-card px-4 py-4">
-        <h1 className="text-sm font-bold text-primary tracking-wide uppercase">AI 创业体检</h1>
+    <div className="flex-1 flex flex-col bg-background relative">
+      {/* Header */}
+      <div className="shrink-0 px-6 py-4 border-b border-border bg-white flex items-center justify-between z-10 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <Zap className="text-primary w-4 h-4" />
+          </div>
+          <div>
+            <h1 className="text-sm font-black text-foreground uppercase tracking-tight">AI 创业体检</h1>
+            <p className="text-[10px] text-muted italic">正在收集中...</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1">
+          {PARAMETER_ORDER.map((key) => (
+            <div 
+              key={key} 
+              className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                state.collected[key] !== undefined ? 'bg-primary' : 'bg-gray-200'
+              }`} 
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 scroll-smooth">
         {messages.map((m) => (
           <MessageBubble
             key={m.id}
@@ -240,12 +261,18 @@ export function AssessmentChat() {
         ))}
       </div>
 
-      <ChatInput
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onSubmit={handleSend}
-        isStreaming={status === 'streaming'}
-      />
+      {/* Input Area */}
+      <div className="shrink-0 p-4 bg-white border-t border-border">
+        <ChatInput
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onSubmit={handleSend}
+          isStreaming={status === 'streaming'}
+        />
+        <p className="text-[10px] text-muted text-center mt-3 italic">
+          AI 正在根据您的输入构建创业画像，请确保数据真实性
+        </p>
+      </div>
     </div>
   );
 }

@@ -21,7 +21,7 @@ export function ConsultClient({ plans }: ConsultClientProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-6">
         {plans.map((plan) => (
           <div key={plan.name} className="relative">
             <PricingCard
