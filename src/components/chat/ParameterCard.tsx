@@ -23,10 +23,6 @@ export function ParameterCard({ parameterKey, value, onSubmit }: ParameterCardPr
     const schema = parameterSchemas[parameterKey];
     const result = schema.safeParse(numValue);
 
-    if (!result.success) {
-      setError(result.error.errors[0].message);
-      return;
-    }
 
     setError(null);
     onSubmit(numValue);
