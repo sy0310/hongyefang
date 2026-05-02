@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Mode - Strictly from prototype */
-  --background: oklch(98.5% 0.006 60);
-  --foreground: oklch(16% 0.015 50);
-  --primary: oklch(52% 0.19 32);
+  /* Light Mode - Maximum Contrast */
+  --background: #FFFFFF;
+  --foreground: #000000; /* Pure black for text */
+  --primary: #B02B0E;
   --primary-foreground: #FFFFFF;
-  --secondary: oklch(62% 0.17 70);
+  --secondary: #965B00;
   --secondary-foreground: #FFFFFF;
-  --success: oklch(65% 0.15 150);
-  --border: oklch(88% 0.01 60);
-  --border-light: oklch(93% 0.007 60);
+  --success: #2E7D32;
+  --border: #E0E0E0;
+  --border-light: #F0F0F0;
   --card: #FFFFFF;
-  --card-foreground: oklch(16% 0.015 50);
-  --muted: oklch(42% 0.012 50); /* text-2 in prototype */
-  --muted-foreground: oklch(62% 0.01 50); /* text-3 in prototype */
+  --card-foreground: #000000;
+  --muted: #424242;     /* Darker secondary text */
+  --muted-foreground: #616161; /* Darker tertiary text */
   --radius: 12px;
 }
 
@@ -41,13 +41,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: oklch(12% 0.01 50);
-    --foreground: oklch(94% 0.005 50);
-    --primary: oklch(62% 0.19 32);
-    --border: oklch(28% 0.01 50);
-    --card: oklch(17% 0.01 50);
-    --muted: oklch(72% 0.008 50);
-    --muted-foreground: oklch(52% 0.008 50);
+    --background: #121212;
+    --foreground: #FFFFFF;
+    --primary: #D66D59;
+    --border: #2C2C2C;
+    --card: #1E1E1E;
+    --muted: #BDBDBD;
+    --muted-foreground: #9E9E9E;
   }
 }
 
