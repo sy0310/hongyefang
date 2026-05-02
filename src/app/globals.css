@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F5F5F5;
-  --foreground: #3A2A24;
-  --primary: #B02B0E;
+  /* Light Mode - Strictly from prototype */
+  --background: oklch(98.5% 0.006 60);
+  --foreground: oklch(16% 0.015 50);
+  --primary: oklch(52% 0.19 32);
   --primary-foreground: #FFFFFF;
-  --secondary: #E68A00;
+  --secondary: oklch(62% 0.17 70);
   --secondary-foreground: #FFFFFF;
-  --success: #52C41A;
-  --border: #E8E8E8;
+  --success: oklch(65% 0.15 150);
+  --border: oklch(88% 0.01 60);
+  --border-light: oklch(93% 0.007 60);
   --card: #FFFFFF;
-  --card-foreground: #3A2A24;
-  --muted: #8C8C8C;
-  --muted-foreground: #F0F0F0;
+  --card-foreground: oklch(16% 0.015 50);
+  --muted: oklch(42% 0.012 50); /* text-2 in prototype */
+  --muted-foreground: oklch(62% 0.01 50); /* text-3 in prototype */
   --radius: 12px;
 }
 
@@ -39,11 +41,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1A1A1A;
-    --foreground: #FDF5F0;
-    --primary: #D66D59;
-    --border: #2A2A2A;
-    --card: #242424;
+    --background: oklch(12% 0.01 50);
+    --foreground: oklch(94% 0.005 50);
+    --primary: oklch(62% 0.19 32);
+    --border: oklch(28% 0.01 50);
+    --card: oklch(17% 0.01 50);
+    --muted: oklch(72% 0.008 50);
+    --muted-foreground: oklch(52% 0.008 50);
   }
 }
 

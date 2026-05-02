@@ -5,6 +5,7 @@ import { DimensionCard } from '@/components/result/DimensionCard';
 import { ResultCTA } from '@/components/result/ResultCTA';
 import { computeSubScores } from '@/lib/scoring/engine';
 import { BottomNav } from '@/components/ui/BottomNav';
+import { BackButton } from '@/components/ui/BackButton';
 
 export const runtime = 'edge'
 
@@ -53,6 +54,7 @@ export default async function ResultPage() {
   return (
     <div className="flex-1 pb-24 bg-gray-50">
       <header className="px-6 pt-12 pb-6">
+        <BackButton className="mb-6" />
         <h1 className="text-xs font-black text-muted uppercase tracking-[0.2em] mb-1">评估报告 (Assessment Report)</h1>
         <h2 className="text-2xl font-black text-foreground">体检结果详情</h2>
       </header>

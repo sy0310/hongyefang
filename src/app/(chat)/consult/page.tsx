@@ -1,5 +1,6 @@
 import { ConsultClient } from './ConsultClient';
 import { BottomNav } from '@/components/ui/BottomNav';
+import { BackButton } from '@/components/ui/BackButton';
 
 const PLANS = [
   {
@@ -46,6 +47,7 @@ export default function ConsultPage() {
   return (
     <div className="flex-1 pb-24 bg-background">
       <header className="px-6 pt-12 pb-8">
+        <BackButton className="mb-6" />
         <div className="flex items-center gap-2 mb-2">
           <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
             <span className="text-primary text-[10px] font-black uppercase">Vip</span>

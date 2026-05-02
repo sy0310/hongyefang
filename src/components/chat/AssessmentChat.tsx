@@ -21,6 +21,7 @@ import {
   completeAssessment,
 } from '@/app/(chat)/assessment/actions';
 import { Zap } from 'lucide-react';
+import { BackButton } from '@/components/ui/BackButton';
 
 const PARAMETER_KEY_TO_DB_COLUMN: Record<ParameterKey, string> = {
   annualCapital: 'annual_capital',
@@ -208,6 +209,7 @@ export function AssessmentChat() {
       {/* Header */}
       <div className="shrink-0 px-6 py-4 border-b border-border bg-white flex items-center justify-between z-10 shadow-sm">
         <div className="flex items-center gap-3">
+          <BackButton className="scale-75 -ml-2" />
           <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
             <Zap className="text-primary w-4 h-4" />
           </div>
