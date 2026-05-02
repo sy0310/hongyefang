@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
+import { Send } from 'lucide-react'
 
 interface ChatInputProps {
   value: string;
@@ -11,25 +11,22 @@ interface ChatInputProps {
 
 export function ChatInput({ value, onChange, onSubmit, isStreaming }: ChatInputProps) {
   return (
-    <div className="border-t border-border/50 bg-card px-4 py-4 pb-8">
-      <form onSubmit={onSubmit} className="flex gap-2 items-center max-w-2xl mx-auto bg-background rounded-2xl border border-border/50 px-2 py-1 shadow-inner">
-        <input
-          type="text"
-          value={value}
-          onChange={onChange}
-          placeholder="输入你的回答..."
-          disabled={isStreaming}
-          className="flex-1 px-3 py-2 bg-transparent text-sm focus:outline-none disabled:opacity-50"
-        />
-        <Button 
-          type="submit" 
-          variant="primary" 
-          disabled={isStreaming} 
-          className="w-auto px-6 py-2 rounded-xl"
-        >
-          发送
-        </Button>
-      </form>
-    </div>
+    <form onSubmit={onSubmit} className="relative flex items-center gap-2">
+      <input
+        type="text"
+        value={value}
+        onChange={onChange}
+        placeholder="输入您的问题..."
+        className="flex-1 bg-gray-50 border border-border rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12"
+        disabled={isStreaming}
+      />
+      <button
+        type="submit"
+        disabled={isStreaming || !value.trim()}
+        className="absolute right-1.5 w-9 h-9 bg-primary text-white rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 active:scale-95 disabled:opacity-50 disabled:active:scale-100 transition-all"
+      >
+        <Send size={18} />
+      </button>
+    </form>
   );
 }

@@ -23,32 +23,38 @@ export function DimensionCard({
   const clampedPct = Math.min(pct, 100);
 
   let tag: string;
+  let tagColor: string;
   if (clampedPct >= 80) {
     tag = goodTag;
+    tagColor = 'text-success';
   } else if (clampedPct >= 50) {
     tag = moderateTag;
+    tagColor = 'text-secondary';
   } else if (clampedPct >= 20) {
     tag = lowTag;
+    tagColor = 'text-primary';
   } else {
     tag = veryLowTag;
+    tagColor = 'text-muted';
   }
 
   return (
-    <div className="mb-8">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-sm font-bold text-foreground/80">{label}</span>
-        <span className="text-xs font-bold text-primary uppercase tracking-tight">{tag}</span>
+    <div className="mb-6 last:mb-0">
+      <div className="flex justify-between items-end mb-2">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-black text-foreground uppercase tracking-tight">{label}</span>
+          <span className={`text-[10px] font-black uppercase tracking-widest ${tagColor}`}>{tag}</span>
+        </div>
+        <span className="text-xs font-black text-muted">{clampedPct}%</span>
       </div>
       <div
         role="progressbar"
-        aria-valuenow={clampedPct}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label={`${label} ${clampedPct}%`}
-        className="h-2.5 bg-foreground/5 rounded-full overflow-hidden"
+        className="h-2 bg-gray-100 rounded-full overflow-hidden"
       >
         <div
-          className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
+          className={`h-full rounded-full transition-all duration-1000 ease-out ${
+            clampedPct >= 80 ? 'bg-success' : clampedPct >= 50 ? 'bg-secondary' : 'bg-primary'
+          }`}
           style={{ width: `${clampedPct}%` }}
         />
       </div>

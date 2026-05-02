@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
 import type { Tier } from '@/types/assessment';
+import { ChevronRight } from 'lucide-react'
 
 interface ResultCTAProps {
   isWishingType: boolean;
@@ -11,13 +12,30 @@ interface ResultCTAProps {
 
 export function ResultCTA({ isWishingType, tier }: ResultCTAProps) {
   const router = useRouter();
-  const { label, variant } = getCTADetails(isWishingType, tier);
+  const { label, subLabel } = getCTADetails(isWishingType, tier);
 
   return (
-    <div className="mt-12 p-8 bg-primary/5 rounded-2xl border border-primary/10">
-      <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-4 text-center">下一步建议</h3>
-      <Button variant={variant} onClick={() => router.push('/consult')} className="py-4 text-base font-bold shadow-xl shadow-primary/20">
+    <div className="space-y-4">
+      <div className="text-center space-y-1 mb-6">
+        <h3 className="text-xs font-black text-primary uppercase tracking-[0.2em]">下一步建议</h3>
+        <p className="text-[13px] text-muted italic">{subLabel}</p>
+      </div>
+      
+      <Button 
+        variant="primary" 
+        onClick={() => router.push('/consult')} 
+        className="py-5 text-lg font-black shadow-2xl shadow-primary/30 group"
+      >
         {label}
+        <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+      </Button>
+      
+      <Button 
+        variant="ghost" 
+        onClick={() => router.push('/dashboard')} 
+        className="py-4 text-sm font-bold text-muted hover:text-foreground"
+      >
+        返回控制台
       </Button>
     </div>
   );
@@ -25,13 +43,22 @@ export function ResultCTA({ isWishingType, tier }: ResultCTAProps) {
 
 function getCTADetails(isWishingType: boolean, tier: Tier): {
   label: string;
-  variant: 'primary' | 'secondary';
+  subLabel: string;
 } {
   if (isWishingType) {
-    return { label: '了解更多 →', variant: 'secondary' };
+    return { 
+      label: '了解标准版方案', 
+      subLabel: '建议从认知补齐开始，打好基础' 
+    };
   }
-  if (tier === '需要准备') {
-    return { label: '了解付费咨询服务 →', variant: 'secondary' };
+  if (tier === '高度适配') {
+    return { 
+      label: '开启 1对1 旗舰咨询', 
+      subLabel: '专家深度介入，加速项目落地' 
+    };
   }
-  return { label: '查看咨询方案', variant: 'primary' };
+  return { 
+    label: '查看咨询方案', 
+    subLabel: '根据您的评分匹配最佳服务' 
+  };
 }
