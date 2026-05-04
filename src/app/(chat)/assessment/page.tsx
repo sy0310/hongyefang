@@ -13,7 +13,7 @@ export default async function AssessmentPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-surface-2">
       <AssessmentChat />
     </main>
   );

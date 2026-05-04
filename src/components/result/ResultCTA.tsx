@@ -17,14 +17,14 @@ export function ResultCTA({ isWishingType, tier }: ResultCTAProps) {
   return (
     <div className="space-y-4">
       <div className="text-center space-y-1 mb-6">
-        <h3 className="text-xs font-black text-primary uppercase tracking-[0.2em]">下一步建议</h3>
-        <p className="text-[13px] text-muted italic">{subLabel}</p>
+        <h3 className="text-xs font-black text-accent uppercase tracking-[0.2em]">下一步建议</h3>
+        <p className="text-[13px] text-text-2 italic">{subLabel}</p>
       </div>
       
       <Button 
         variant="primary" 
         onClick={() => router.push('/consult')} 
-        className="py-5 text-lg font-black shadow-2xl shadow-primary/30 group"
+        className="py-5 text-lg font-black shadow-2xl shadow-accent/30 group"
       >
         {label}
         <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -33,7 +33,7 @@ export function ResultCTA({ isWishingType, tier }: ResultCTAProps) {
       <Button 
         variant="ghost" 
         onClick={() => router.push('/dashboard')} 
-        className="py-4 text-sm font-bold text-muted hover:text-foreground"
+        className="py-4 text-sm font-bold text-text-2 hover:text-text"
       >
         返回控制台
       </Button>

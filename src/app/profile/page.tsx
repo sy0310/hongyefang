@@ -18,17 +18,17 @@ export default async function ProfilePage() {
   ];
 
   return (
-    <div className="flex-1 pb-24 bg-background">
+    <div className="flex-1 pb-24 bg-bg">
       {/* Header */}
-      <header className="px-6 pt-16 pb-8 bg-white border-b border-border">
+      <header className="px-6 pt-16 pb-8 bg-surface border-b border-border">
         <div className="flex flex-col items-center text-center">
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 shadow-inner">
-            <UserIcon className="text-primary w-10 h-10" />
+          <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mb-4 shadow-inner">
+            <UserIcon className="text-accent w-10 h-10" />
           </div>
-          <h1 className="text-xl font-black text-foreground uppercase tracking-tight mb-1">
+          <h1 className="text-xl font-black text-text uppercase tracking-tight mb-1">
             {user?.email?.split('@')[0] || '创业者'}
           </h1>
-          <p className="text-xs text-muted font-bold uppercase tracking-widest">
+          <p className="text-xs text-text-2 font-bold uppercase tracking-widest">
             {user?.email}
           </p>
         </div>
@@ -39,15 +39,15 @@ export default async function ProfilePage() {
         {menuItems.map((item, i) => (
           <button
             key={i}
-            className="w-full flex items-center justify-between p-5 bg-white rounded-2xl border border-border transition-all active:scale-[0.98]"
+            className="w-full flex items-center justify-between p-5 bg-surface rounded-2xl border border-border transition-all active:scale-[0.98]"
           >
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                <item.icon size={20} className="text-foreground/70" />
+              <div className="w-10 h-10 rounded-xl bg-surface-2 flex items-center justify-center">
+                <item.icon size={20} className="text-text/70" />
               </div>
-              <span className="text-[15px] font-bold text-foreground">{item.label}</span>
+              <span className="text-[15px] font-bold text-text">{item.label}</span>
             </div>
-            <ChevronRight size={18} className="text-muted" />
+            <ChevronRight size={18} className="text-text-2" />
           </button>
         ))}
       </div>

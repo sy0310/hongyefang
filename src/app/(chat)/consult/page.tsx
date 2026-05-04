@@ -45,17 +45,17 @@ const PLANS = [
 
 export default function ConsultPage() {
   return (
-    <div className="flex-1 pb-24 bg-background">
+    <div className="flex-1 pb-24 bg-bg">
       <header className="px-6 pt-12 pb-8">
         <BackButton className="mb-6" />
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
-            <span className="text-primary text-[10px] font-black uppercase">Vip</span>
+          <div className="w-6 h-6 rounded bg-accent/10 flex items-center justify-center">
+            <span className="text-accent text-[10px] font-black uppercase">Vip</span>
           </div>
-          <h2 className="text-xs font-black text-primary uppercase tracking-[0.2em]">咨询服务 (Consulting)</h2>
+          <h2 className="text-xs font-black text-accent uppercase tracking-[0.2em]">咨询服务 (Consulting)</h2>
         </div>
-        <h1 className="text-3xl font-black text-foreground mb-3 leading-tight">量身定制的<br/>创业辅导方案</h1>
-        <p className="text-[13px] text-muted italic leading-relaxed">
+        <h1 className="text-3xl font-black text-text mb-3 leading-tight">量身定制的<br/>创业辅导方案</h1>
+        <p className="text-[13px] text-text-2 italic leading-relaxed">
           基于您的评估结果，我们为您匹配了以下梯度服务，助您规避风险。
         </p>
       </header>
@@ -65,12 +65,12 @@ export default function ConsultPage() {
       </div>
 
       <footer className="px-10 py-12 text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 mb-2">
-          <span className="text-muted text-xs">?</span>
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-surface-2 mb-2">
+          <span className="text-text-2 text-xs">?</span>
         </div>
-        <p className="text-[11px] text-muted italic leading-relaxed">
+        <p className="text-[11px] text-text-2 italic leading-relaxed">
           支付完成后，专属顾问将在 24 小时内通过系统消息与您联系。<br/>
-          如有疑问，请咨询 <span className="text-foreground underline">在线客服</span>。
+          如有疑问，请咨询 <span className="text-text underline">在线客服</span>。
         </p>
       </footer>
       

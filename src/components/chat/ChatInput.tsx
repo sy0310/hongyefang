@@ -17,13 +17,13 @@ export function ChatInput({ value, onChange, onSubmit, isStreaming }: ChatInputP
         value={value}
         onChange={onChange}
         placeholder="输入您的问题..."
-        className="flex-1 bg-gray-50 border border-border rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12"
+        className="flex-1 bg-surface-2 border border-border rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all pr-12"
         disabled={isStreaming}
       />
       <button
         type="submit"
         disabled={isStreaming || !value.trim()}
-        className="absolute right-1.5 w-9 h-9 bg-primary text-white rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 active:scale-95 disabled:opacity-50 disabled:active:scale-100 transition-all"
+        className="absolute right-1.5 w-9 h-9 bg-accent text-white rounded-lg flex items-center justify-center shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50 disabled:active:scale-100 transition-all"
       >
         <Send size={18} />
       </button>

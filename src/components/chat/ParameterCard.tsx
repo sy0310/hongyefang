@@ -31,17 +31,17 @@ export function ParameterCard({ parameterKey, value, onSubmit }: ParameterCardPr
   return (
     <div className={`p-6 rounded-3xl border transition-all duration-500 ${
       isSubmitted 
-        ? 'bg-success/5 border-success/20' 
-        : 'bg-white border-primary shadow-lg shadow-primary/5'
+        ? 'bg-green/5 border-green/20' 
+        : 'bg-surface border-accent shadow-lg shadow-accent/5'
     }`}>
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-xs font-black text-muted uppercase tracking-[0.2em] mb-1">
+          <h3 className="text-xs font-black text-text-2 uppercase tracking-[0.2em] mb-1">
             {PARAMETER_LABELS[parameterKey]}
           </h3>
-          <p className="text-[10px] text-muted italic font-medium">请确认以下核心业务参数</p>
+          <p className="text-[10px] text-text-2 italic font-medium">请确认以下核心业务参数</p>
         </div>
-        {isSubmitted && <CheckCircle2 className="text-success w-5 h-5" />}
+        {isSubmitted && <CheckCircle2 className="text-green w-5 h-5" />}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -51,16 +51,16 @@ export function ParameterCard({ parameterKey, value, onSubmit }: ParameterCardPr
             value={isSubmitted ? value : inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             disabled={isSubmitted}
-            className={`w-full bg-gray-50 border rounded-2xl px-5 py-4 text-2xl font-black tracking-tighter transition-all focus:outline-none focus:ring-4 ${
+            className={`w-full bg-surface-2 border rounded-2xl px-5 py-4 text-2xl font-black tracking-tighter transition-all focus:outline-none focus:ring-4 ${
               isSubmitted 
-                ? 'border-transparent text-success' 
+                ? 'border-transparent text-green' 
                 : error 
                   ? 'border-red-500 focus:ring-red-500/10 text-red-500' 
-                  : 'border-border focus:ring-primary/10 focus:border-primary text-foreground'
+                  : 'border-border focus:ring-accent/10 focus:border-accent text-text'
             }`}
             placeholder="0.00"
           />
-          <span className="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-black text-muted italic uppercase">
+          <span className="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-black text-text-2 italic uppercase">
             {PARAMETER_UNITS[parameterKey]}
           </span>
         </div>

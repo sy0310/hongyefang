@@ -52,11 +52,11 @@ export default async function ResultPage() {
   });
 
   return (
-    <div className="flex-1 pb-24 bg-gray-50">
+    <div className="flex-1 pb-24 bg-surface-2">
       <header className="px-6 pt-12 pb-6">
         <BackButton className="mb-6" />
-        <h1 className="text-xs font-black text-muted uppercase tracking-[0.2em] mb-1">评估报告 (Assessment Report)</h1>
-        <h2 className="text-2xl font-black text-foreground">体检结果详情</h2>
+        <h1 className="text-xs font-black text-text-2 uppercase tracking-[0.2em] mb-1">评估报告 (Assessment Report)</h1>
+        <h2 className="text-2xl font-black text-text">体检结果详情</h2>
       </header>
 
       <div className="px-6 space-y-6">
@@ -66,8 +66,8 @@ export default async function ResultPage() {
           isWishingType={assessment.is_wishing_type ?? false}
         />
 
-        <section className="bg-white rounded-3xl border border-border p-8 shadow-sm">
-          <h3 className="text-xs font-black text-foreground uppercase tracking-[0.2em] mb-8">画像维度 (Dimensions)</h3>
+        <section className="bg-surface rounded-3xl border border-border p-8 shadow-sm">
+          <h3 className="text-xs font-black text-text uppercase tracking-[0.2em] mb-8">画像维度 (Dimensions)</h3>
           <div className="space-y-2">
             {DIMENSION_CONFIG.map((dim) => {
               const subScoreKey = FIELD_TO_SUBSCORE_KEY[dim.dbField];
@@ -88,10 +88,10 @@ export default async function ResultPage() {
           </div>
         </section>
 
-        <section className="bg-white rounded-3xl border border-border p-8 shadow-sm">
-          <h3 className="text-xs font-black text-foreground uppercase tracking-[0.2em] mb-6">AI 综合评述 (Narrative)</h3>
+        <section className="bg-surface rounded-3xl border border-border p-8 shadow-sm">
+          <h3 className="text-xs font-black text-text uppercase tracking-[0.2em] mb-6">AI 综合评述 (Narrative)</h3>
           {assessment.ai_narrative && (
-            <p className="text-[13px] font-bold text-foreground/70 leading-relaxed italic mb-10 pb-6 border-b border-gray-50">
+            <p className="text-[13px] font-bold text-text/70 leading-relaxed italic mb-10 pb-6 border-b border-border-light">
               “{assessment.ai_narrative}”
             </p>
           )}

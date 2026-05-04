@@ -28,7 +28,7 @@ export function RegisterForm() {
     return (
       <div className="text-center space-y-4">
         <p className="text-green-600">{success}</p>
-        <p className="text-sm text-gray-500">请检查邮箱并点击确认链接完成注册</p>
+        <p className="text-sm text-text-3">请检查邮箱并点击确认链接完成注册</p>
       </div>
     )
   }

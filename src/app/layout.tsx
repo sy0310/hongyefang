@@ -1,9 +1,14 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
+import { DM_Sans, Noto_Sans_SC } from 'next/font/google'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const dmSans = DM_Sans({
+  variable: '--font-display',
+  subsets: ['latin'],
+})
+
+const notoSansSC = Noto_Sans_SC({
+  variable: '--font-body',
   subsets: ['latin'],
 })
 
@@ -24,8 +29,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <body className={`${geistSans.variable} bg-gray-900 flex justify-center min-h-screen`}>
-        <div className="w-full max-w-[430px] bg-background min-h-screen shadow-2xl relative overflow-x-hidden flex flex-col">
+      <body className={`${dmSans.variable} ${notoSansSC.variable} bg-gray-900 flex justify-center min-h-screen`}>
+        <div className="w-full max-w-[430px] bg-bg min-h-screen shadow-2xl relative overflow-x-hidden flex flex-col">
           {children}
         </div>
       </body>

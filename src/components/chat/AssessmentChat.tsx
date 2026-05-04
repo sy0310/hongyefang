@@ -179,22 +179,22 @@ export function AssessmentChat() {
   // Session resume prompt UI
   if (showResumePrompt) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background px-4">
-        <div className="max-w-md w-full bg-card rounded-2xl shadow-sm border border-border/50 p-8 text-center">
-          <h2 className="text-xl font-bold text-foreground mb-2">继续上次对话？</h2>
-          <p className="text-sm text-foreground/60 mb-6">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-bg px-4">
+        <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm border border-border/50 p-8 text-center">
+          <h2 className="text-xl font-bold text-text mb-2">继续上次对话？</h2>
+          <p className="text-sm text-text/60 mb-6">
             检测到您之前有一次未完成的创业体检，是否继续？
           </p>
           <div className="flex gap-3 justify-center">
             <button
               onClick={handleResume}
-              className="px-6 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity"
+              className="px-6 py-2 bg-accent text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity"
             >
               继续
             </button>
             <button
               onClick={handleStartFresh}
-              className="px-6 py-2 bg-foreground/5 text-foreground/70 text-sm font-semibold rounded-lg hover:bg-foreground/10 transition-colors"
+              className="px-6 py-2 bg-text/5 text-text/70 text-sm font-semibold rounded-lg hover:bg-text/10 transition-colors"
             >
               重新开始
             </button>
@@ -205,17 +205,17 @@ export function AssessmentChat() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-background relative">
+    <div className="flex-1 flex flex-col bg-bg relative">
       {/* Header */}
-      <div className="shrink-0 px-6 py-4 border-b border-border bg-white flex items-center justify-between z-10 shadow-sm">
+      <div className="shrink-0 px-6 py-4 border-b border-border bg-surface flex items-center justify-between z-10 shadow-sm">
         <div className="flex items-center gap-3">
           <BackButton className="scale-75 -ml-2" />
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Zap className="text-primary w-4 h-4" />
+          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+            <Zap className="text-accent w-4 h-4" />
           </div>
           <div>
-            <h1 className="text-sm font-black text-foreground uppercase tracking-tight">AI 创业体检</h1>
-            <p className="text-[10px] text-muted italic">正在收集中...</p>
+            <h1 className="text-sm font-black text-text uppercase tracking-tight">AI 创业体检</h1>
+            <p className="text-[10px] text-text-2 italic">正在收集中...</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -223,7 +223,7 @@ export function AssessmentChat() {
             <div 
               key={key} 
               className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                state.collected[key] !== undefined ? 'bg-primary' : 'bg-gray-200'
+                state.collected[key] !== undefined ? 'bg-accent' : 'bg-border-light'
               }`} 
             />
           ))}
@@ -264,14 +264,14 @@ export function AssessmentChat() {
       </div>
 
       {/* Input Area */}
-      <div className="shrink-0 p-4 bg-white border-t border-border">
+      <div className="shrink-0 p-4 bg-surface border-t border-border">
         <ChatInput
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onSubmit={handleSend}
           isStreaming={status === 'streaming'}
         />
-        <p className="text-[10px] text-muted text-center mt-3 italic">
+        <p className="text-[10px] text-text-2 text-center mt-3 italic">
           AI 正在根据您的输入构建创业画像，请确保数据真实性
         </p>
       </div>

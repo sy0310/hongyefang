@@ -13,10 +13,10 @@ export function BackButton({ className = '' }: BackButtonProps) {
   return (
     <button
       onClick={() => router.back()}
-      className={`group flex items-center justify-center w-10 h-10 rounded-full bg-white border border-border shadow-sm hover:bg-gray-50 active:scale-95 transition-all ${className}`}
+      className={`group flex items-center justify-center w-10 h-10 rounded-full bg-surface border border-border shadow-sm hover:bg-surface-2 active:scale-95 transition-all ${className}`}
       aria-label="返回上一页"
     >
-      <ChevronLeft className="w-5 h-5 text-foreground group-hover:-translate-x-0.5 transition-transform" />
+      <ChevronLeft className="w-5 h-5 text-text group-hover:-translate-x-0.5 transition-transform" />
     </button>
   );
 }

@@ -26,7 +26,7 @@ export function TabsTrigger({ value, activeValue, onClick, children }: TabsTrigg
   return (
     <button
       className={`flex-1 py-3 text-sm font-semibold border-b-2 transition-all duration-200
-        ${isActive ? 'border-primary text-primary' : 'border-transparent text-foreground/40 hover:text-foreground/60'}`}
+        ${isActive ? 'border-accent text-accent' : 'border-transparent text-text/40 hover:text-text/60'}`}
       onClick={onClick}
       type="button"
     >

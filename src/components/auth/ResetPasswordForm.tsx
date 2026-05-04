@@ -28,7 +28,7 @@ export function ResetPasswordForm() {
     return (
       <div className="text-center space-y-4">
         <p className="text-green-600">重置链接已发送到您的邮箱</p>
-        <p className="text-sm text-gray-500">请检查邮箱并点击链接设置新密码</p>
+        <p className="text-sm text-text-3">请检查邮箱并点击链接设置新密码</p>
       </div>
     )
   }

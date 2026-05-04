@@ -10,8 +10,8 @@ interface ScoreBannerProps {
 
 const TIER_BADGE_STYLES: Record<string, string> = {
   '高度适配': 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600',
-  '中度适配': 'bg-primary/10 border-primary/20 text-primary',
-  '需要准备': 'bg-foreground/5 border-foreground/10 text-foreground/60',
+  '中度适配': 'bg-accent/10 border-accent/20 text-accent',
+  '需要准备': 'bg-text/5 border-foreground/10 text-text/60',
 };
 
 const SUBTITLES: Record<string, string> = {
@@ -34,9 +34,9 @@ export function ScoreBanner({ score, tier, isWishingType }: ScoreBannerProps) {
   const Icon = TIER_ICONS[tier];
 
   return (
-    <section className="bg-white rounded-3xl border border-border shadow-[0_10px_40px_rgba(0,0,0,0.02)] p-8 relative overflow-hidden text-center">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-32 h-32 bg-secondary/5 rounded-full -ml-16 -mb-16 blur-3xl" />
+    <section className="bg-surface rounded-3xl border border-border shadow-[0_10px_40px_rgba(0,0,0,0.02)] p-8 relative overflow-hidden text-center">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber/5 rounded-full -ml-16 -mb-16 blur-3xl" />
       
       <div className="relative z-10 space-y-6">
         <div className="flex flex-col items-center">
@@ -49,7 +49,7 @@ export function ScoreBanner({ score, tier, isWishingType }: ScoreBannerProps) {
                 stroke="currentColor"
                 strokeWidth="8"
                 fill="transparent"
-                className="text-gray-100"
+                className="text-border-light"
               />
               <circle
                 cx="64"
@@ -60,13 +60,13 @@ export function ScoreBanner({ score, tier, isWishingType }: ScoreBannerProps) {
                 fill="transparent"
                 strokeDasharray={377}
                 strokeDashoffset={377 - (377 * score) / 1000}
-                className="text-primary transition-all duration-1000 ease-out"
+                className="text-accent transition-all duration-1000 ease-out"
                 strokeLinecap="round"
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-black text-foreground leading-none">{score}</span>
-              <span className="text-[10px] font-black text-muted uppercase tracking-widest mt-1">Score</span>
+              <span className="text-4xl font-black text-text leading-none">{score}</span>
+              <span className="text-[10px] font-black text-text-2 uppercase tracking-widest mt-1">Score</span>
             </div>
           </div>
           
@@ -77,7 +77,7 @@ export function ScoreBanner({ score, tier, isWishingType }: ScoreBannerProps) {
         </div>
 
         <div className="max-w-xs mx-auto">
-          <p className="text-[15px] font-bold text-foreground leading-relaxed">{subtitle}</p>
+          <p className="text-[15px] font-bold text-text leading-relaxed">{subtitle}</p>
           {isWishingType && (
             <div className="mt-4 p-3 bg-red-50 rounded-xl border border-red-100">
               <p className="text-[11px] font-bold text-red-600 italic">

@@ -20,28 +20,28 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <div className="flex-1 pb-24 bg-gray-50">
+    <div className="flex-1 pb-24 bg-surface-2">
       {/* Top Header */}
-      <header className="px-6 pt-12 pb-8 bg-white border-b border-border">
+      <header className="px-6 pt-12 pb-8 bg-surface border-b border-border">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <UserIcon className="text-primary w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+              <UserIcon className="text-accent w-5 h-5" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-muted uppercase tracking-widest">Welcome Back</p>
-              <h2 className="text-sm font-black text-foreground uppercase tracking-tight">{user?.email?.split('@')[0] || 'User'}</h2>
+              <p className="text-[10px] font-black text-text-2 uppercase tracking-widest">Welcome Back</p>
+              <h2 className="text-sm font-black text-text uppercase tracking-tight">{user?.email?.split('@')[0] || 'User'}</h2>
             </div>
           </div>
           <form action={logout}>
-            <button className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-red-50 hover:text-red-600 transition-colors">
+            <button className="w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center hover:bg-red-50 hover:text-red-600 transition-colors">
               <LogOut size={16} />
             </button>
           </form>
         </div>
         
-        <div className="bg-primary p-6 rounded-3xl text-white shadow-xl shadow-primary/20 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
+        <div className="bg-accent p-6 rounded-3xl text-white shadow-xl shadow-accent/20 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-surface/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <h1 className="text-2xl font-black mb-2 relative z-10 leading-tight">精准筛选<br/>优质创业项目</h1>
           <p className="text-[11px] font-bold text-white/70 uppercase tracking-[0.2em] relative z-10">AI-Powered Optimization</p>
         </div>
@@ -50,8 +50,8 @@ export default async function DashboardPage() {
       {/* Service Funnel Section */}
       <section className="px-6 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xs font-black text-foreground uppercase tracking-[0.2em]">服务漏斗 (Service Funnel)</h3>
-          <Settings size={14} className="text-muted" />
+          <h3 className="text-xs font-black text-text uppercase tracking-[0.2em]">服务漏斗 (Service Funnel)</h3>
+          <Settings size={14} className="text-text-2" />
         </div>
 
         <div className="space-y-4">
@@ -59,23 +59,23 @@ export default async function DashboardPage() {
             <Link 
               key={step.id} 
               href={step.href}
-              className={`block bg-white rounded-2xl p-5 border transition-all active:scale-[0.98] ${
+              className={`block bg-surface rounded-2xl p-5 border transition-all active:scale-[0.98] ${
                 step.status === 'ready' 
-                  ? 'border-primary shadow-lg shadow-primary/5' 
+                  ? 'border-accent shadow-lg shadow-accent/5' 
                   : 'border-border opacity-60 grayscale cursor-not-allowed'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <span className={`text-xl font-black ${step.status === 'ready' ? 'text-primary' : 'text-muted'}`}>
+                  <span className={`text-xl font-black ${step.status === 'ready' ? 'text-accent' : 'text-text-2'}`}>
                     {step.id}
                   </span>
                   <div>
-                    <h4 className="text-[15px] font-black text-foreground mb-0.5">{step.title}</h4>
-                    <p className="text-[11px] text-muted font-medium italic">{step.desc}</p>
+                    <h4 className="text-[15px] font-black text-text mb-0.5">{step.title}</h4>
+                    <p className="text-[11px] text-text-2 font-medium italic">{step.desc}</p>
                   </div>
                 </div>
-                {step.status === 'ready' && <ChevronRight className="text-primary" size={18} />}
+                {step.status === 'ready' && <ChevronRight className="text-accent" size={18} />}
               </div>
             </Link>
           ))}
