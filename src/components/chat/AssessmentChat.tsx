@@ -30,6 +30,21 @@ const PARAMETER_KEY_TO_DB_COLUMN: Record<ParameterKey, string> = {
   investmentAmount: 'investment_amount',
 };
 
+const PARAMETER_EXPLANATIONS: Record<ParameterKey, string> = {
+  annualCapital: `首先，我需要了解您每年可以灵活动用的弹性资金——也就是在不影响日常生活的前提下，可以用于创业的资金量。
+
+这个数字直接决定您的"试错空间"：创业初期很少能马上盈利，充足的弹性资金意味着您有更长的时间找到正确的方向，不必因为短期资金压力而被迫放弃。`,
+  weeklyTime: `接下来是时间投入。请告诉我您每周能专注在这个项目上的小时数。
+
+时间是创业中最稀缺的资源之一。全职投入与兼职推进，在项目早期的进展速度可以相差 3 到 5 倍——这个数据会直接影响您的评估结果与建议方向。`,
+  expectedReturn: `第三项，您对这次创业的预期年化回报率是多少？请输入百分比数字。
+
+这个指标很有意思——它反映的不只是目标，更是您对市场的认知。过高的预期往往是创业失败的早期信号，而合理的预期则是理性决策的基础。我们会根据这个数字判断您的风险收益匹配度。`,
+  investmentAmount: `最后一项，您打算为这次创业具体投入多少启动资金？
+
+这与弹性资金不同——这是您准备专门押注在这个项目上的金额。结合前面的信息，这将帮助我们完整评估您的资金效率与风险承受能力，生成最终的创业适配度报告。`,
+};
+
 export function AssessmentChat() {
   const router = useRouter();
   const [showResumePrompt, setShowResumePrompt] = useState(false);
@@ -289,11 +304,18 @@ export function AssessmentChat() {
 
         {state.currentParameter &&
           state.collected[state.currentParameter] === undefined && (
-            <ParameterCard
-              parameterKey={state.currentParameter}
-              value={null}
-              onSubmit={handleParameterSubmit}
-            />
+            <>
+              <MessageBubble
+                role="assistant"
+                content={PARAMETER_EXPLANATIONS[state.currentParameter]}
+              />
+              <ParameterCard
+                key={state.currentParameter}
+                parameterKey={state.currentParameter}
+                value={null}
+                onSubmit={handleParameterSubmit}
+              />
+            </>
           )}
       </div>
 
