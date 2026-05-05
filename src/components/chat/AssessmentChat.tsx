@@ -10,6 +10,7 @@ import {
   type ConversationState,
   type ParameterKey,
 } from '@/lib/chat/state-machine';
+import { PARAMETER_LABELS, PARAMETER_UNITS } from '@/types/assessment';
 import { createClient } from '@/lib/supabase/client';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 import { ParameterCard } from '@/components/chat/ParameterCard';
@@ -21,7 +22,6 @@ import {
   completeAssessment,
 } from '@/app/(chat)/assessment/actions';
 import { Zap } from 'lucide-react';
-import { BackButton } from '@/components/ui/BackButton';
 
 const PARAMETER_KEY_TO_DB_COLUMN: Record<ParameterKey, string> = {
   annualCapital: 'annual_capital',
@@ -52,10 +52,10 @@ export function AssessmentChat() {
 
   const [state, dispatch] = useReducer(conversationReducer, initialState);
 
-  // Use refs so the transport can read current state values on each request
-  const followUpRoundsRef = useRef(state.followUpRounds);
+  // Refs so transport reads latest state on every request
+  const collectedRef = useRef(state.collected);
   const currentParameterRef = useRef(state.currentParameter);
-  followUpRoundsRef.current = state.followUpRounds;
+  collectedRef.current = state.collected;
   currentParameterRef.current = state.currentParameter;
 
   const transportRef = useRef<DefaultChatTransport<UIMessage> | null>(null);
@@ -66,7 +66,7 @@ export function AssessmentChat() {
         ...req,
         body: {
           ...body,
-          followUpRounds: followUpRoundsRef.current,
+          collected: collectedRef.current,
           currentParameter: currentParameterRef.current,
         },
       }),
@@ -76,6 +76,9 @@ export function AssessmentChat() {
   const { messages, sendMessage, status } = useChat<UIMessage>({
     transport: transportRef.current,
   });
+
+  // Track whether we've sent the initial greeting to avoid double-send
+  const greetingSentRef = useRef(false);
 
   // Session resume: on mount, check for in-progress assessment
   useEffect(() => {
@@ -95,6 +98,14 @@ export function AssessmentChat() {
     }
     checkResume();
   }, []);
+
+  // Send initial greeting once assessmentId is set for a fresh session
+  useEffect(() => {
+    if (state.assessmentId && !showResumePrompt && !greetingSentRef.current && messages.length === 0) {
+      greetingSentRef.current = true;
+      sendMessage({ text: '你好，我准备好了，开始吧' });
+    }
+  }, [state.assessmentId, showResumePrompt, messages.length, sendMessage]);
 
   const handleResume = useCallback(() => {
     if (!restoredAssessment) return;
@@ -125,11 +136,15 @@ export function AssessmentChat() {
     dispatch({ type: 'START' });
   }, []);
 
-  // Parameter submit handler -- real-time save to Supabase
+  // Parameter submit: save to state + DB + notify Gemini
   const handleParameterSubmit = useCallback(async (value: number) => {
     if (!state.currentParameter || !state.assessmentId) return;
     const key = state.currentParameter;
     dispatch({ type: 'PARAMETER_COLLECTED', key, value });
+
+    // Tell Gemini the user submitted this value so it can acknowledge naturally
+    const unit = PARAMETER_UNITS[key];
+    sendMessage({ text: `${value}${unit}` });
 
     const supabase = createClient();
     const dbColumn = PARAMETER_KEY_TO_DB_COLUMN[key];
@@ -139,9 +154,9 @@ export function AssessmentChat() {
       .eq('id', state.assessmentId);
 
     if (error) console.error('Failed to save parameter:', error.message);
-  }, [state.currentParameter, state.assessmentId]);
+  }, [state.currentParameter, state.assessmentId, sendMessage]);
 
-  // Batch save chat_messages on completion + redirect to /result
+  // On completion: save messages + redirect
   useEffect(() => {
     if (!state.isComplete || !state.assessmentId) return;
 
@@ -222,11 +237,11 @@ export function AssessmentChat() {
         </div>
         <div className="flex items-center gap-1">
           {PARAMETER_ORDER.map((key) => (
-            <div 
-              key={key} 
+            <div
+              key={key}
               className={`w-1.5 h-1.5 rounded-full transition-colors ${
                 state.collected[key] !== undefined ? 'bg-accent' : 'bg-border-light'
-              }`} 
+              }`}
             />
           ))}
         </div>

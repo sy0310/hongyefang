@@ -1,123 +1,66 @@
-import { streamText, simulateReadableStream, type UIMessage } from 'ai';
-import type { LanguageModelV3StreamPart } from '@ai-sdk/provider';
-import { MockLanguageModelV3 } from 'ai/test';
-import { getNextMockResponse, getCompletionMessage } from '@/lib/chat/mock-responses';
+import { google } from '@ai-sdk/google';
+import { streamText, convertToModelMessages, type UIMessage } from 'ai';
 import { PARAMETER_ORDER, type ParameterKey } from '@/lib/chat/state-machine';
 
-export const runtime = 'edge'
+export const runtime = 'edge';
 
-const PARAMETER_MAP: Record<string, ParameterKey> = {
-  '年度弹性资金': 'annualCapital',
-  '弹性资金': 'annualCapital',
-  '资金': 'annualCapital',
-  '每周投入时间': 'weeklyTime',
-  '投入时间': 'weeklyTime',
-  '每周时间': 'weeklyTime',
-  '时间': 'weeklyTime',
-  '预期年化回报': 'expectedReturn',
-  '预期回报': 'expectedReturn',
-  '回报': 'expectedReturn',
-  '年化回报': 'expectedReturn',
-  '投入金额': 'investmentAmount',
-  '初期投入': 'investmentAmount',
-  '金额': 'investmentAmount',
+const PARAM_LABELS: Record<ParameterKey, string> = {
+  annualCapital: '年度弹性资金（万元）',
+  weeklyTime: '每周投入时间（小时/周）',
+  expectedReturn: '预期年化回报率（%）',
+  investmentAmount: '计划投资金额（万元）',
 };
 
-function detectCollectedParameters(messages: UIMessage[]): Map<ParameterKey, number> {
-  const collected = new Map<ParameterKey, number>();
+function buildSystemPrompt(
+  collected: Partial<Record<ParameterKey, number>>,
+  currentParameter: ParameterKey | null,
+): string {
+  const collectedCount = Object.keys(collected).length;
+  const total = PARAMETER_ORDER.length;
 
-  for (const msg of messages) {
-    if (msg.role !== 'user') continue;
+  const collectedLines = PARAMETER_ORDER
+    .filter(k => collected[k] !== undefined)
+    .map(k => `  - ${PARAM_LABELS[k]}: ${collected[k]}`)
+    .join('\n');
 
-    const text = msg.parts
-      .filter(p => p.type === 'text')
-      .map(p => p.text)
-      .join('');
+  const currentLabel = currentParameter
+    ? PARAM_LABELS[currentParameter]
+    : collectedCount >= total
+    ? '全部已收集，无需再问'
+    : '准备开始';
 
-    const numberMatch = text.match(/(\d+(?:\.\d+)?)/);
-    if (!numberMatch) continue;
-    const value = parseFloat(numberMatch[1]);
+  return `你是弘业坊的 AI 创业顾问，正在帮助用户完成创业适配度评估。
 
-    const msgIndex = messages.indexOf(msg);
-    if (msgIndex > 0) {
-      const prevMsg = messages[msgIndex - 1];
-      if (prevMsg.role === 'assistant') {
-        const prevText = prevMsg.parts
-          .filter(p => p.type === 'text')
-          .map(p => p.text)
-          .join('');
+进度：已收集 ${collectedCount}/${total} 项
+${collectedCount > 0 ? `已有数据：\n${collectedLines}\n` : ''}当前应询问：${currentLabel}
 
-        for (const [keyword, key] of Object.entries(PARAMETER_MAP)) {
-          if (prevText.includes(keyword)) {
-            collected.set(key, value);
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  return collected;
-}
-
-function makeStreamParts(text: string): LanguageModelV3StreamPart[] {
-  return [
-    { type: 'text-start', id: 'msg-1' },
-    ...text.split('').map(char => ({
-      type: 'text-delta' as const,
-      id: 'msg-1',
-      delta: char,
-    })),
-    { type: 'text-end', id: 'msg-1' },
-    {
-      type: 'finish',
-      finishReason: { unified: 'stop' as const, raw: undefined },
-      usage: {
-        inputTokens: { total: 10, noCache: undefined, cacheRead: undefined, cacheWrite: undefined },
-        outputTokens: { total: text.length, text: text.length, reasoning: undefined },
-      },
-    },
-  ];
+【行为规则】
+1. 用温暖自然的中文对话，语气亲切、简洁，每次回复 1~3 句话
+2. 系统已提供了数字输入卡片，用户在卡片里填数字提交——你无需让用户在聊天框里输入数字
+3. 当用户提交某项数据后，简短表示认可，顺势引出下一个问题（若还有剩余）
+4. 当 4 项数据全部收集完毕时，告知用户报告正在生成，不再提问
+5. 第一次对话时，简短自我介绍并说明评估目的，然后引出第一个问题
+6. 不要重复已经收集到的数据，不要啰嗦`;
 }
 
 export async function POST(req: Request) {
-  const body = await req.json() as { messages: UIMessage[]; body?: { followUpRounds?: Record<string, number>; currentParameter?: string } };
+  const body = await req.json() as {
+    messages: UIMessage[];
+    body?: {
+      collected?: Partial<Record<ParameterKey, number>>;
+      currentParameter?: ParameterKey | null;
+    };
+  };
+
   const messages = body.messages;
-  const clientFollowUpRounds = body.body?.followUpRounds ?? {};
-  const clientCurrentParam = body.body?.currentParameter ?? null;
-  const currentRounds = clientCurrentParam ? (clientFollowUpRounds[clientCurrentParam] ?? 0) : 0;
-  const followUpLimitReached = currentRounds >= 1;
-
-  const collected = detectCollectedParameters(messages);
-  const collectedCount = collected.size;
-
-  let currentParameter: ParameterKey | null = null;
-  for (const param of PARAMETER_ORDER) {
-    if (!collected.has(param)) {
-      currentParameter = param;
-      break;
-    }
-  }
-
-  const mockResponse = collectedCount >= 4
-    ? getCompletionMessage()
-    : getNextMockResponse(collectedCount, currentParameter, false, followUpLimitReached);
+  const collected = body.body?.collected ?? {};
+  const currentParameter = body.body?.currentParameter ?? null;
 
   const result = streamText({
-    model: new MockLanguageModelV3({
-      doStream: {
-        stream: new ReadableStream({
-          start(controller) {
-            const parts = makeStreamParts(mockResponse);
-            for (const part of parts) {
-              controller.enqueue(part);
-            }
-            controller.close();
-          },
-        }),
-      },
-    }),
-    messages: [{ role: 'user', content: mockResponse }],
+    model: google('gemini-2.0-flash'),
+    system: buildSystemPrompt(collected, currentParameter),
+    messages: await convertToModelMessages(messages),
+    maxOutputTokens: 200,
   });
 
   return result.toUIMessageStreamResponse();
