@@ -1,17 +1,15 @@
 'use client';
 
-import { ShieldCheck, AlertCircle, TrendingUp } from 'lucide-react'
-
 interface ScoreBannerProps {
   score: number;
   tier: '高度适配' | '中度适配' | '需要准备';
   isWishingType: boolean;
 }
 
-const TIER_BADGE_STYLES: Record<string, string> = {
-  '高度适配': 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600',
-  '中度适配': 'bg-accent/10 border-accent/20 text-accent',
-  '需要准备': 'bg-text/5 border-foreground/10 text-text/60',
+const TIER_BADGE: Record<string, { bg: string; color: string; border: string }> = {
+  '高度适配': { bg: 'var(--green-light)', color: 'var(--green-text)', border: 'oklch(85% 0.07 158)' },
+  '中度适配': { bg: 'var(--amber-light)', color: 'var(--amber-text)', border: 'oklch(88% 0.07 70)' },
+  '需要准备': { bg: 'var(--surface-2)', color: 'var(--text-2)', border: 'var(--border)' },
 };
 
 const SUBTITLES: Record<string, string> = {
@@ -20,73 +18,70 @@ const SUBTITLES: Record<string, string> = {
   '需要准备': '当前阶段还有一些准备工作，打好基础会让创业之路更顺畅。',
 };
 
-const TIER_ICONS: Record<string, any> = {
-  '高度适配': ShieldCheck,
-  '中度适配': TrendingUp,
-  '需要准备': AlertCircle,
-};
-
 export function ScoreBanner({ score, tier, isWishingType }: ScoreBannerProps) {
+  const badge = TIER_BADGE[tier];
   const subtitle = isWishingType
     ? '创业热情是好事，当前阶段建议先做好准备，时机成熟后再出发。'
     : SUBTITLES[tier];
-    
-  const Icon = TIER_ICONS[tier];
+  const gaugePct = Math.min(Math.max(score / 10, 0), 100);
 
   return (
-    <section className="bg-surface rounded-3xl border border-border shadow-[0_10px_40px_rgba(0,0,0,0.02)] p-8 relative overflow-hidden text-center">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber/5 rounded-full -ml-16 -mb-16 blur-3xl" />
-      
-      <div className="relative z-10 space-y-6">
-        <div className="flex flex-col items-center">
-          <div className="relative w-32 h-32 flex items-center justify-center mb-2">
-            <svg className="w-full h-full transform -rotate-90">
-              <circle
-                cx="64"
-                cy="64"
-                r="60"
-                stroke="currentColor"
-                strokeWidth="8"
-                fill="transparent"
-                className="text-border-light"
-              />
-              <circle
-                cx="64"
-                cy="64"
-                r="60"
-                stroke="currentColor"
-                strokeWidth="8"
-                fill="transparent"
-                strokeDasharray={377}
-                strokeDashoffset={377 - (377 * score) / 1000}
-                className="text-accent transition-all duration-1000 ease-out"
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-black text-text leading-none">{score}</span>
-              <span className="text-[10px] font-black text-text-2 uppercase tracking-widest mt-1">Score</span>
-            </div>
-          </div>
-          
-          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] font-black uppercase tracking-wider ${TIER_BADGE_STYLES[tier]}`}>
-            <Icon size={12} />
-            {tier}
-          </div>
-        </div>
+    <section className="bg-surface rounded-[var(--radius)] border border-border-light shadow-sm p-7">
+      <p className="text-[13px] mb-2.5" style={{ color: 'var(--text-3)' }}>您的创业适配评分</p>
 
-        <div className="max-w-xs mx-auto">
-          <p className="text-[15px] font-bold text-text leading-relaxed">{subtitle}</p>
-          {isWishingType && (
-            <div className="mt-4 p-3 bg-red-50 rounded-xl border border-red-100">
-              <p className="text-[11px] font-bold text-red-600 italic">
-                检测到“许愿型”倾向，系统已触发风险管控机制
-              </p>
-            </div>
-          )}
+      {/* Score + badge row */}
+      <div className="flex items-center gap-3 mb-3">
+        <span
+          className="font-bold leading-none"
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 52,
+            color: 'var(--text)',
+            letterSpacing: '-2px',
+          }}
+        >
+          {score}
+        </span>
+        <div className="flex flex-col gap-1.5">
+          <span
+            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-semibold border whitespace-nowrap"
+            style={{ background: badge.bg, color: badge.color, borderColor: badge.border }}
+          >
+            {tier}
+          </span>
+          <span className="text-[12px]" style={{ color: 'var(--text-3)' }}>满分 1000</span>
         </div>
       </div>
+
+      {/* Gauge bar */}
+      <div className="relative h-2 rounded-full overflow-hidden mb-1.5" style={{ background: 'var(--surface-2)' }}>
+        <div
+          className="absolute left-0 top-0 h-full rounded-full transition-[width] duration-1000 ease-out"
+          style={{
+            width: `${gaugePct}%`,
+            background: 'linear-gradient(90deg, var(--green) 0%, var(--amber) 100%)',
+          }}
+        />
+      </div>
+      <div className="flex justify-between mb-5">
+        <span className="text-[11px]" style={{ color: 'var(--text-3)' }}>0 需要准备</span>
+        <span className="text-[11px]" style={{ color: 'var(--amber-text)' }}>500 中度适配</span>
+        <span className="text-[11px]" style={{ color: 'var(--green-text)' }}>800+ 高度适配</span>
+      </div>
+
+      {/* Subtitle */}
+      <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-2)' }}>{subtitle}</p>
+
+      {isWishingType && (
+        <div
+          className="mt-4 p-3 rounded-xl border"
+          style={{ background: 'oklch(97% 0.03 20)', borderColor: 'oklch(90% 0.06 20)' }}
+        >
+          <p className="text-[12px] font-medium" style={{ color: 'oklch(45% 0.18 20)' }}>
+            检测到"许愿型"倾向，系统已触发风险管控机制
+          </p>
+        </div>
+      )}
     </section>
   );
 }

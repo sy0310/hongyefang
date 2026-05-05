@@ -1,18 +1,21 @@
 import { createClient } from '@/lib/supabase/server'
-import { logout } from '@/app/(auth)/login/actions'
-import { AssessmentEntryButton } from '@/components/dashboard/AssessmentEntryButton'
-import { BottomNav } from '@/components/ui/BottomNav'
-import { LogOut, User as UserIcon, Settings, ChevronRight } from 'lucide-react'
+import { NavHeader } from '@/components/ui/NavHeader'
 import Link from 'next/link'
 
 export const runtime = 'edge'
 
 const FUNNEL_STEPS = [
-  { id: '01', title: 'AI 创业体检', desc: '全方位评估项目可行性', status: 'ready', href: '/assessment' },
-  { id: '02', title: '深度咨询方案', desc: '1对1 专家诊断与方案匹配', status: 'locked', href: '/consult' },
-  { id: '03', title: '资源精准对接', desc: '行业上下游核心资源导入', status: 'locked', href: '#' },
-  { id: '04', title: '关键指标调优', desc: '运营模型与转化率深度优化', status: 'locked', href: '#' },
-  { id: '05', title: '代运营/陪跑', desc: '全流程托管，加速项目落地', status: 'locked', href: '#' },
+  { label: 'AI 体检', desc: '智能收集画像', status: 'active', step: 1, href: '/assessment' },
+  { label: '付费咨询', desc: '精准匹配顾问', status: 'available', step: 2, href: '/consult' },
+  { label: 'DIY 交付', desc: '标准资料包', status: 'locked', step: 3, href: '#' },
+  { label: '全权托管', desc: '深度介入', status: 'locked', step: 4, href: '#' },
+  { label: '代运营', desc: '规模化扩张', status: 'locked', step: 5, href: '#' },
+]
+
+const STATS = [
+  { label: '体检次数', value: '1', icon: '📋' },
+  { label: '综合评分', value: '—', icon: '⭐' },
+  { label: '评估等级', value: '待评估', icon: '🎯' },
 ]
 
 export default async function DashboardPage() {
@@ -20,69 +23,143 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <div className="flex-1 pb-24 bg-surface-2">
-      {/* Top Header */}
-      <header className="px-6 pt-12 pb-8 bg-surface border-b border-border">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-              <UserIcon className="text-accent w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-text-2 uppercase tracking-widest">Welcome Back</p>
-              <h2 className="text-sm font-black text-text uppercase tracking-tight">{user?.email?.split('@')[0] || 'User'}</h2>
-            </div>
+    <div className="flex-1 flex flex-col bg-bg overflow-y-auto">
+      <NavHeader userEmail={user?.email} />
+
+      <div className="flex-1 p-7 flex flex-col gap-5">
+        {/* Welcome */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-[22px] font-bold text-text" style={{ letterSpacing: '-0.3px' }}>欢迎回来 👋</h1>
+            <p className="text-[14px] text-text-3 mt-1">{user?.email || 'user@example.com'}</p>
           </div>
-          <form action={logout}>
-            <button className="w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center hover:bg-red-50 hover:text-red-600 transition-colors">
-              <LogOut size={16} />
-            </button>
-          </form>
-        </div>
-        
-        <div className="bg-accent p-6 rounded-3xl text-white shadow-xl shadow-accent/20 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-surface/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
-          <h1 className="text-2xl font-black mb-2 relative z-10 leading-tight">精准筛选<br/>优质创业项目</h1>
-          <p className="text-[11px] font-bold text-white/70 uppercase tracking-[0.2em] relative z-10">AI-Powered Optimization</p>
-        </div>
-      </header>
-
-      {/* Service Funnel Section */}
-      <section className="px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xs font-black text-text uppercase tracking-[0.2em]">服务漏斗 (Service Funnel)</h3>
-          <Settings size={14} className="text-text-2" />
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-semibold border" style={{ background: 'var(--accent-light)', color: 'var(--accent-text)', borderColor: 'oklch(88% 0.07 32)' }}>
+            MVP 体验版
+          </span>
         </div>
 
-        <div className="space-y-4">
-          {FUNNEL_STEPS.map((step) => (
-            <Link 
-              key={step.id} 
-              href={step.href}
-              className={`block bg-surface rounded-2xl p-5 border transition-all active:scale-[0.98] ${
-                step.status === 'ready' 
-                  ? 'border-accent shadow-lg shadow-accent/5' 
-                  : 'border-border opacity-60 grayscale cursor-not-allowed'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <span className={`text-xl font-black ${step.status === 'ready' ? 'text-accent' : 'text-text-2'}`}>
-                    {step.id}
-                  </span>
-                  <div>
-                    <h4 className="text-[15px] font-black text-text mb-0.5">{step.title}</h4>
-                    <p className="text-[11px] text-text-2 font-medium italic">{step.desc}</p>
-                  </div>
-                </div>
-                {step.status === 'ready' && <ChevronRight className="text-accent" size={18} />}
-              </div>
-            </Link>
+        {/* Stats grid */}
+        <div className="grid grid-cols-3 gap-3">
+          {STATS.map((s) => (
+            <div key={s.label} className="bg-surface rounded-[var(--radius)] border border-border-light shadow-sm p-4">
+              <div className="text-[22px] mb-2">{s.icon}</div>
+              <div className="text-[20px] font-bold text-text" style={{ fontFamily: 'var(--font-display)' }}>{s.value}</div>
+              <div className="text-[12px] text-text-3 mt-0.5">{s.label}</div>
+            </div>
           ))}
         </div>
-      </section>
 
-      <BottomNav />
+        {/* Main CTA card */}
+        <div
+          className="rounded-[var(--radius)] p-7 border"
+          style={{
+            background: 'linear-gradient(135deg, var(--accent-light) 0%, oklch(97% 0.035 60) 100%)',
+            borderColor: 'oklch(88% 0.07 32)',
+          }}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="text-[17px] font-bold text-text mb-2">AI 创业体检</h2>
+              <p className="text-[13px] text-text-2 leading-relaxed mb-5" style={{ maxWidth: 280 }}>
+                通过 AI 对话收集您的资金状况、时间投入、预期回报，生成精准创业适配评估报告。
+              </p>
+              <Link
+                href="/assessment"
+                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-[var(--radius-sm)] bg-accent text-white text-[14px] font-medium hover:opacity-90 transition-opacity"
+                style={{ boxShadow: '0 2px 8px oklch(52% 0.19 32 / 0.28)' }}
+              >
+                开始体检
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
+            </div>
+            <div
+              className="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'var(--accent-light)', border: '2px solid oklch(85% 0.1 32)' }}
+            >
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5">
+                <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V9l-6-6z" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M9 3v6h6M9 13h6M9 17h4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Service funnel */}
+        <div className="bg-surface rounded-[var(--radius)] border border-border-light shadow-sm p-6">
+          <h3 className="text-[15px] font-semibold text-text mb-4">服务漏斗</h3>
+          <div className="flex flex-col gap-2">
+            {FUNNEL_STEPS.map((item) => {
+              const isActive = item.status === 'active'
+              const isAvailable = item.status === 'available'
+              const isLocked = item.status === 'locked'
+
+              return (
+                <div
+                  key={item.step}
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-[var(--radius-sm)]"
+                  style={{
+                    background: isActive
+                      ? 'var(--accent-light)'
+                      : isAvailable
+                      ? 'var(--green-light)'
+                      : 'var(--surface-2)',
+                    border: `1px solid ${isActive ? 'oklch(88% 0.07 32)' : isAvailable ? 'oklch(88% 0.07 158)' : 'var(--border-light)'}`,
+                  }}
+                >
+                  <div
+                    className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: isActive
+                        ? 'var(--accent)'
+                        : isAvailable
+                        ? 'var(--green)'
+                        : 'var(--border)',
+                    }}
+                  >
+                    <span
+                      className="text-[12px] font-bold"
+                      style={{ color: isLocked ? 'var(--text-3)' : '#fff' }}
+                    >
+                      {item.step}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <span
+                      className="text-[13px] font-semibold"
+                      style={{ color: isLocked ? 'var(--text-3)' : 'var(--text)' }}
+                    >
+                      {item.label}
+                    </span>
+                    <span className="text-[12px] text-text-3 ml-2">{item.desc}</span>
+                  </div>
+                  {isLocked && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-3)' }}>
+                      <rect x="3" y="11" width="18" height="11" rx="2" />
+                      <path d="M7 11V7a5 5 0 0110 0v4" strokeLinecap="round" />
+                    </svg>
+                  )}
+                  {isActive && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-semibold border" style={{ background: 'var(--accent-light)', color: 'var(--accent-text)', borderColor: 'oklch(88% 0.07 32)' }}>
+                      进行中
+                    </span>
+                  )}
+                  {isAvailable && (
+                    <Link
+                      href={item.href}
+                      className="text-[12px] font-semibold hover:underline"
+                      style={{ color: 'var(--green-text)' }}
+                    >
+                      查看 →
+                    </Link>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

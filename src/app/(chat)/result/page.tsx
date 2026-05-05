@@ -4,8 +4,8 @@ import { ScoreBanner } from '@/components/result/ScoreBanner';
 import { DimensionCard } from '@/components/result/DimensionCard';
 import { ResultCTA } from '@/components/result/ResultCTA';
 import { computeSubScores } from '@/lib/scoring/engine';
-import { BottomNav } from '@/components/ui/BottomNav';
-import { BackButton } from '@/components/ui/BackButton';
+import { NavHeader } from '@/components/ui/NavHeader';
+import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
 
 export const runtime = 'edge'
 
@@ -52,23 +52,20 @@ export default async function ResultPage() {
   });
 
   return (
-    <div className="flex-1 pb-24 bg-surface-2">
-      <header className="px-6 pt-12 pb-6">
-        <BackButton className="mb-6" />
-        <h1 className="text-xs font-black text-text-2 uppercase tracking-[0.2em] mb-1">评估报告 (Assessment Report)</h1>
-        <h2 className="text-2xl font-black text-text">体检结果详情</h2>
-      </header>
+    <div className="flex-1 flex flex-col bg-bg overflow-y-auto">
+      <NavHeader userEmail={user.email} />
+      <FunnelProgressBar currentStep={2} />
 
-      <div className="px-6 space-y-6">
+      <div className="flex-1 px-5 py-6 flex flex-col gap-4">
         <ScoreBanner
           score={assessment.score}
           tier={assessment.tier}
           isWishingType={assessment.is_wishing_type ?? false}
         />
 
-        <section className="bg-surface rounded-3xl border border-border p-8 shadow-sm">
-          <h3 className="text-xs font-black text-text uppercase tracking-[0.2em] mb-8">画像维度 (Dimensions)</h3>
-          <div className="space-y-2">
+        <section className="bg-surface rounded-[var(--radius)] border border-border-light shadow-sm p-6">
+          <h3 className="text-[15px] font-bold text-text mb-5">维度详情</h3>
+          <div className="space-y-4">
             {DIMENSION_CONFIG.map((dim) => {
               const subScoreKey = FIELD_TO_SUBSCORE_KEY[dim.dbField];
               const subScore = subScores[subScoreKey as keyof typeof subScores];
@@ -88,18 +85,18 @@ export default async function ResultPage() {
           </div>
         </section>
 
-        <section className="bg-surface rounded-3xl border border-border p-8 shadow-sm">
-          <h3 className="text-xs font-black text-text uppercase tracking-[0.2em] mb-6">AI 综合评述 (Narrative)</h3>
+        <section className="bg-surface rounded-[var(--radius)] border border-border-light shadow-sm p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-[14px] font-semibold text-text">AI 顾问分析</span>
+          </div>
           {assessment.ai_narrative && (
-            <p className="text-[13px] font-bold text-text/70 leading-relaxed italic mb-10 pb-6 border-b border-border-light">
-              “{assessment.ai_narrative}”
+            <p className="text-[14px] text-text-2 leading-[1.8] whitespace-pre-line mb-6">
+              {assessment.ai_narrative}
             </p>
           )}
           <ResultCTA isWishingType={assessment.is_wishing_type ?? false} tier={assessment.tier} />
         </section>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

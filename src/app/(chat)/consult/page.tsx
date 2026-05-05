@@ -1,15 +1,17 @@
 import { ConsultClient } from './ConsultClient';
-import { BottomNav } from '@/components/ui/BottomNav';
-import { BackButton } from '@/components/ui/BackButton';
+import { NavHeader } from '@/components/ui/NavHeader';
+import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 
 const PLANS = [
   {
     name: '标准版',
     price: 2999,
-    description: '基础诊断 — 适合创业想法初步验证',
+    description: '基础诊断 — 适合初步验证方向',
     features: [
       '1次深度沟通（60分钟）',
-      'AI创业评估报告详细解读',
+      'AI评估报告详细解读',
       '创业方向可行性分析',
       '个性化建议文档',
     ],
@@ -18,7 +20,7 @@ const PLANS = [
   {
     name: '专业版',
     price: 6999,
-    description: '深度方案 — 适合有明确方向的创业者',
+    description: '深度方案 — 适合有明确方向者',
     features: [
       '3次深度沟通（每次60分钟）',
       '包含标准版所有内容',
@@ -31,7 +33,7 @@ const PLANS = [
   {
     name: '旗舰版',
     price: 14999,
-    description: '全流程陪跑 — 适合需要全面辅导的创业者',
+    description: '全程陪跑 — 适合需要全面辅导者',
     features: [
       '8次深度沟通（每次60分钟）',
       '包含专业版所有内容',
@@ -43,38 +45,28 @@ const PLANS = [
   },
 ];
 
-export default function ConsultPage() {
+export default async function ConsultPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
   return (
-    <div className="flex-1 pb-24 bg-bg">
-      <header className="px-6 pt-12 pb-8">
-        <BackButton className="mb-6" />
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-6 h-6 rounded bg-accent/10 flex items-center justify-center">
-            <span className="text-accent text-[10px] font-black uppercase">Vip</span>
-          </div>
-          <h2 className="text-xs font-black text-accent uppercase tracking-[0.2em]">咨询服务 (Consulting)</h2>
-        </div>
-        <h1 className="text-3xl font-black text-text mb-3 leading-tight">量身定制的<br/>创业辅导方案</h1>
-        <p className="text-[13px] text-text-2 italic leading-relaxed">
-          基于您的评估结果，我们为您匹配了以下梯度服务，助您规避风险。
-        </p>
-      </header>
+    <div className="flex-1 flex flex-col bg-bg overflow-y-auto">
+      <NavHeader userEmail={user.email} />
+      <FunnelProgressBar currentStep={3} />
 
-      <div className="px-6">
+      <div className="flex-1 px-5 py-6">
+        <div className="text-center mb-7">
+          <h1 className="text-[22px] font-bold text-text" style={{ letterSpacing: '-0.3px' }}>人工咨询服务</h1>
+          <p className="text-[14px] mt-2" style={{ color: 'var(--text-3)' }}>根据您的创业评估结果，为您推荐以下方案</p>
+        </div>
+
         <ConsultClient plans={PLANS} />
-      </div>
 
-      <footer className="px-10 py-12 text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-surface-2 mb-2">
-          <span className="text-text-2 text-xs">?</span>
-        </div>
-        <p className="text-[11px] text-text-2 italic leading-relaxed">
-          支付完成后，专属顾问将在 24 小时内通过系统消息与您联系。<br/>
-          如有疑问，请咨询 <span className="text-text underline">在线客服</span>。
+        <p className="text-[13px] text-center mt-6" style={{ color: 'var(--text-3)' }}>
+          所有咨询均通过线上进行。支付完成后，专员将在24小时内联系您。
         </p>
-      </footer>
-      
-      <BottomNav />
+      </div>
     </div>
   );
 }

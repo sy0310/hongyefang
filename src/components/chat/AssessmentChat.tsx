@@ -179,7 +179,7 @@ export function AssessmentChat() {
   // Session resume prompt UI
   if (showResumePrompt) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-bg px-4">
+      <div className="flex-1 flex flex-col items-center justify-center bg-bg px-4">
         <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm border border-border/50 p-8 text-center">
           <h2 className="text-xl font-bold text-text mb-2">继续上次对话？</h2>
           <p className="text-sm text-text/60 mb-6">
@@ -209,13 +209,15 @@ export function AssessmentChat() {
       {/* Header */}
       <div className="shrink-0 px-6 py-4 border-b border-border bg-surface flex items-center justify-between z-10 shadow-sm">
         <div className="flex items-center gap-3">
-          <BackButton className="scale-75 -ml-2" />
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Zap className="text-accent w-4 h-4" />
           </div>
           <div>
-            <h1 className="text-sm font-black text-text uppercase tracking-tight">AI 创业体检</h1>
-            <p className="text-[10px] text-text-2 italic">正在收集中...</p>
+            <h1 className="text-sm font-semibold text-text">AI 创业顾问</h1>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-green" />
+              <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>在线</p>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-1">

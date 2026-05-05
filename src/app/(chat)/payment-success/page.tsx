@@ -2,8 +2,9 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
-import { CheckCircle2, ChevronRight, QrCode } from 'lucide-react'
-import { BottomNav } from '@/components/ui/BottomNav'
+import { QrCode } from 'lucide-react'
+import { NavHeader } from '@/components/ui/NavHeader';
+import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
 
 export const runtime = 'edge'
 
@@ -43,59 +44,86 @@ export default async function PaymentSuccessPage({
   const shortOrderId = order.id.slice(0, 8).toUpperCase();
 
   return (
-    <div className="flex-1 pb-24 bg-bg">
-      <div className="px-6 pt-16 pb-12 text-center">
-        <div className="w-20 h-20 mx-auto bg-green/10 rounded-3xl flex items-center justify-center mb-6 shadow-sm">
-          <CheckCircle2 className="w-10 h-10 text-green" strokeWidth={2.5} />
+    <div className="flex-1 flex flex-col bg-bg overflow-y-auto">
+      <NavHeader userEmail={user.email} />
+      <FunnelProgressBar currentStep={4} />
+
+      <div className="flex-1 px-5 py-8">
+        <div className="max-w-[440px] mx-auto">
+          <div className="bg-surface rounded-[var(--radius-lg)] border border-border-light shadow-sm p-9 text-center">
+            {/* Success icon */}
+            <div
+              className="w-[72px] h-[72px] rounded-full flex items-center justify-center mx-auto mb-5"
+              style={{ background: 'var(--green-light)', border: '3px solid var(--green)' }}
+            >
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2.5">
+                <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+
+            <h1 className="text-[22px] font-bold text-text mb-2">支付成功</h1>
+            <p className="text-[14px] mb-7" style={{ color: 'var(--text-3)' }}>您的咨询套餐已购买成功</p>
+
+            {/* Order details */}
+            <div
+              className="rounded-[var(--radius-sm)] p-[18px] text-left mb-7 flex flex-col gap-3"
+              style={{ background: 'var(--surface-2)' }}
+            >
+              {[
+                { label: '套餐', value: order.plan_name },
+                { label: '金额', value: formattedAmount, large: true },
+                { label: '订单号', value: shortOrderId, mono: true },
+              ].map((row, i) => (
+                <div
+                  key={i}
+                  className="flex justify-between items-center"
+                  style={i < 2 ? { borderBottom: '1px solid var(--border)', paddingBottom: 12 } : {}}
+                >
+                  <span className="text-[13px]" style={{ color: 'var(--text-3)' }}>{row.label}</span>
+                  <span
+                    className={row.mono ? 'font-mono' : ''}
+                    style={{
+                      fontSize: row.large ? 18 : 14,
+                      fontWeight: row.large ? 700 : 600,
+                      fontFamily: row.large ? 'var(--font-display)' : 'inherit',
+                      color: 'var(--text)',
+                    }}
+                  >
+                    {row.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Next steps */}
+            <div
+              className="rounded-[var(--radius)] p-5 mb-6 text-left"
+              style={{ background: 'var(--accent-light)', border: '1px solid oklch(88% 0.07 32)' }}
+            >
+              <h2 className="text-[15px] font-bold text-text mb-1.5">我们将在24小时内联系您</h2>
+              <p className="text-[13px] text-text-2 leading-relaxed">专员将通过您注册时使用的联系方式与您对接，请保持通讯畅通。</p>
+            </div>
+
+            {/* QR placeholder */}
+            <div className="mb-6">
+              <div
+                className="w-[120px] h-[120px] mx-auto mb-2 rounded-xl flex flex-col items-center justify-center gap-1"
+                style={{ background: 'var(--surface-2)', border: '1px dashed var(--border)' }}
+              >
+                <QrCode className="w-8 h-8" style={{ color: 'var(--text-3)' }} strokeWidth={1.5} />
+                <span className="text-[10px] font-mono" style={{ color: 'var(--text-3)' }}>微信二维码</span>
+              </div>
+              <p className="text-[12px]" style={{ color: 'var(--text-3)' }}>扫码添加专属顾问微信</p>
+            </div>
+
+            <Link href="/dashboard" className="block">
+              <Button variant="primary" className="py-4 text-sm font-semibold">
+                返回首页
+              </Button>
+            </Link>
+          </div>
         </div>
-        <h1 className="text-3xl font-black text-text mb-2">支付成功</h1>
-        <p className="text-[13px] text-text-2 italic">感谢您的信任，创业之旅正式开启</p>
       </div>
-
-      <div className="px-6 space-y-6">
-        <div className="bg-surface rounded-3xl border border-border p-8 space-y-6 shadow-sm">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black text-text-2 uppercase tracking-[0.2em]">购买方案</span>
-              <span className="text-sm font-black text-text">{order.plan_name}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black text-text-2 uppercase tracking-[0.2em]">实付金额</span>
-              <span className="text-2xl font-black text-accent tracking-tighter">{formattedAmount}</span>
-            </div>
-            <div className="flex justify-between items-center pt-2 border-t border-border-light">
-              <span className="text-[10px] font-black text-text-2 uppercase tracking-[0.2em]">订单编号</span>
-              <span className="text-[10px] font-mono text-text-2 uppercase">{shortOrderId}</span>
-            </div>
-          </div>
-
-          <div className="bg-accent/5 rounded-2xl p-5 border border-accent/10">
-            <h3 className="text-xs font-black text-accent uppercase tracking-wider mb-2">专属服务承诺</h3>
-            <p className="text-[11px] font-bold text-accent/70 leading-relaxed italic">
-              “我们将根据您的体检画像深度定制咨询大纲。顾问将在 24 小时内通过系统消息与您对接，请保持关注。”
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-surface rounded-3xl border border-border p-8 text-center space-y-4">
-          <div className="w-32 h-32 mx-auto bg-surface-2 rounded-2xl flex items-center justify-center border-2 border-dashed border-border/50 group hover:border-accent transition-colors cursor-help">
-            <QrCode className="w-12 h-12 text-text-2 group-hover:text-accent transition-colors" strokeWidth={1.5} />
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs font-black text-text uppercase tracking-widest">添加顾问微信</p>
-            <p className="text-[10px] text-text-2 italic">扫码或长按保存图片，获取即时支持</p>
-          </div>
-        </div>
-
-        <Link href="/dashboard" className="block">
-          <Button variant="primary" className="py-5 text-sm font-black uppercase tracking-widest shadow-2xl shadow-accent/20 group">
-            返回控制台
-            <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </Link>
-      </div>
-
-      <BottomNav />
     </div>
   );
 }
