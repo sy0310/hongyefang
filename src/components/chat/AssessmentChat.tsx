@@ -1,19 +1,12 @@
 'use client';
 
-import { useReducer, useEffect, useState, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { useRouter } from 'next/navigation';
 import { DefaultChatTransport, type UIMessage } from 'ai';
-import {
-  conversationReducer,
-  PARAMETER_ORDER,
-  type ConversationState,
-  type ParameterKey,
-} from '@/lib/chat/state-machine';
-import { PARAMETER_LABELS, PARAMETER_UNITS } from '@/types/assessment';
+import { PARAMETER_ORDER, type ParameterKey } from '@/lib/chat/state-machine';
 import { createClient } from '@/lib/supabase/client';
 import { MessageBubble } from '@/components/chat/MessageBubble';
-import { ParameterCard } from '@/components/chat/ParameterCard';
 import { ChatInput } from '@/components/chat/ChatInput';
 import {
   createAssessment,
@@ -30,25 +23,15 @@ const PARAMETER_KEY_TO_DB_COLUMN: Record<ParameterKey, string> = {
   investmentAmount: 'investment_amount',
 };
 
-const PARAMETER_EXPLANATIONS: Record<ParameterKey, string> = {
-  annualCapital: `首先，我需要了解您每年可以灵活动用的弹性资金——也就是在不影响日常生活的前提下，可以用于创业的资金量。
-
-这个数字直接决定您的"试错空间"：创业初期很少能马上盈利，充足的弹性资金意味着您有更长的时间找到正确的方向，不必因为短期资金压力而被迫放弃。`,
-  weeklyTime: `接下来是时间投入。请告诉我您每周能专注在这个项目上的小时数。
-
-时间是创业中最稀缺的资源之一。全职投入与兼职推进，在项目早期的进展速度可以相差 3 到 5 倍——这个数据会直接影响您的评估结果与建议方向。`,
-  expectedReturn: `第三项，您对这次创业的预期年化回报率是多少？请输入百分比数字。
-
-这个指标很有意思——它反映的不只是目标，更是您对市场的认知。过高的预期往往是创业失败的早期信号，而合理的预期则是理性决策的基础。我们会根据这个数字判断您的风险收益匹配度。`,
-  investmentAmount: `最后一项，您打算为这次创业具体投入多少启动资金？
-
-这与弹性资金不同——这是您准备专门押注在这个项目上的金额。结合前面的信息，这将帮助我们完整评估您的资金效率与风险承受能力，生成最终的创业适配度报告。`,
-};
+const INIT_TRIGGER = '__start__';
 
 export function AssessmentChat() {
   const router = useRouter();
+  const [assessmentId, setAssessmentId] = useState<string | null>(null);
   const [showResumePrompt, setShowResumePrompt] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+  const [collected, setCollected] = useState<Partial<Record<ParameterKey, number>>>({});
   const [input, setInput] = useState('');
   const [restoredAssessment, setRestoredAssessment] = useState<{
     id: string;
@@ -58,21 +41,14 @@ export function AssessmentChat() {
     investment_amount: number | null;
   } | null>(null);
 
-  const initialState: ConversationState = {
-    collected: {} as Record<ParameterKey, number>,
-    currentParameter: null,
-    followUpRounds: {} as Record<ParameterKey, number>,
-    assessmentId: null,
-    isComplete: false,
-  };
-
-  const [state, dispatch] = useReducer(conversationReducer, initialState);
-
-  // Refs so transport reads latest state on every request
-  const collectedRef = useRef(state.collected);
-  const currentParameterRef = useRef(state.currentParameter);
-  collectedRef.current = state.collected;
-  currentParameterRef.current = state.currentParameter;
+  const assessmentIdRef = useRef<string | null>(null);
+  assessmentIdRef.current = assessmentId;
+  const collectedRef = useRef(collected);
+  collectedRef.current = collected;
+  const initSentRef = useRef(false);
+  const isCompleteRef = useRef(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const addToolResultRef = useRef<((...args: any[]) => void) | null>(null);
 
   const transportRef = useRef<DefaultChatTransport<UIMessage> | null>(null);
   if (!transportRef.current) {
@@ -84,51 +60,103 @@ export function AssessmentChat() {
           ...body,
           messages: msgs,
           collected: collectedRef.current,
-          currentParameter: currentParameterRef.current,
         },
       }),
     });
   }
 
-  const { messages, sendMessage, status } = useChat<UIMessage>({
+  const { messages, sendMessage, status, addToolResult } = useChat<UIMessage>({
     transport: transportRef.current,
+    onToolCall: async ({ toolCall }) => {
+      if (toolCall.toolName === 'collectParameter') {
+        const { key, value } = toolCall.input as { key: ParameterKey; value: number };
+
+        const aId = assessmentIdRef.current;
+        if (aId) {
+          const supabase = createClient();
+          const dbCol = PARAMETER_KEY_TO_DB_COLUMN[key];
+          await supabase
+            .from('assessments')
+            .update({ [dbCol]: value, updated_at: new Date().toISOString() })
+            .eq('id', aId);
+        }
+
+        const newCollected = { ...collectedRef.current, [key]: value };
+        setCollected(newCollected);
+
+        if (!isCompleteRef.current && Object.keys(newCollected).length >= PARAMETER_ORDER.length) {
+          isCompleteRef.current = true;
+          setIsComplete(true);
+          setIsGeneratingReport(true);
+        }
+
+        addToolResultRef.current?.({ tool: 'collectParameter', toolCallId: toolCall.toolCallId, output: 'recorded' });
+      }
+    },
   });
 
-  // Session resume: on mount, check for in-progress assessment
+  // Keep addToolResult ref up to date
+  addToolResultRef.current = addToolResult;
+
+  // Completion effect: save messages + redirect
+  useEffect(() => {
+    if (!isComplete || !assessmentId) return;
+
+    async function finish() {
+      await completeAssessment(assessmentId!);
+
+      const messagesToSave = messages
+        .map(m => ({
+          role: m.role as 'user' | 'assistant',
+          content: m.parts.filter(p => p.type === 'text').map(p => p.text).join(''),
+        }))
+        .filter(m => m.content.trim() && m.role !== 'tool' as string);
+
+      if (messagesToSave.length > 0) {
+        await saveChatMessages(assessmentId!, messagesToSave);
+      }
+
+      router.push('/result');
+    }
+
+    finish();
+  }, [isComplete, assessmentId, messages, router]);
+
+  // Session resume check on mount
   useEffect(() => {
     async function checkResume() {
       const result = await getInProgressAssessment();
       if ('error' in result || !result.assessment) {
         const created = await createAssessment();
         if ('id' in created) {
-          dispatch({ type: 'SET_ASSESEMENT_ID', id: created.id });
-          dispatch({ type: 'START' });
+          setAssessmentId(created.id);
         }
         return;
       }
-
       setRestoredAssessment(result.assessment);
       setShowResumePrompt(true);
     }
     checkResume();
   }, []);
 
+  // Send init trigger once session is ready
+  useEffect(() => {
+    if (assessmentId && !showResumePrompt && !initSentRef.current && messages.length === 0) {
+      initSentRef.current = true;
+      sendMessage({ text: INIT_TRIGGER });
+    }
+  }, [assessmentId, showResumePrompt, messages.length, sendMessage]);
+
   const handleResume = useCallback(() => {
     if (!restoredAssessment) return;
-    dispatch({ type: 'SET_ASSESEMENT_ID', id: restoredAssessment.id });
+    setAssessmentId(restoredAssessment.id);
 
-    if (restoredAssessment.annual_capital !== null) {
-      dispatch({ type: 'PARAMETER_COLLECTED', key: 'annualCapital', value: restoredAssessment.annual_capital });
-    }
-    if (restoredAssessment.weekly_time !== null) {
-      dispatch({ type: 'PARAMETER_COLLECTED', key: 'weeklyTime', value: restoredAssessment.weekly_time });
-    }
-    if (restoredAssessment.expected_return !== null) {
-      dispatch({ type: 'PARAMETER_COLLECTED', key: 'expectedReturn', value: restoredAssessment.expected_return });
-    }
-    if (restoredAssessment.investment_amount !== null) {
-      dispatch({ type: 'PARAMETER_COLLECTED', key: 'investmentAmount', value: restoredAssessment.investment_amount });
-    }
+    const restored: Partial<Record<ParameterKey, number>> = {};
+    if (restoredAssessment.annual_capital !== null) restored.annualCapital = restoredAssessment.annual_capital;
+    if (restoredAssessment.weekly_time !== null) restored.weeklyTime = restoredAssessment.weekly_time;
+    if (restoredAssessment.expected_return !== null) restored.expectedReturn = restoredAssessment.expected_return;
+    if (restoredAssessment.investment_amount !== null) restored.investmentAmount = restoredAssessment.investment_amount;
+    setCollected(restored);
     setShowResumePrompt(false);
   }, [restoredAssessment]);
 
@@ -137,60 +165,9 @@ export function AssessmentChat() {
     setRestoredAssessment(null);
     const created = await createAssessment();
     if ('id' in created) {
-      dispatch({ type: 'SET_ASSESEMENT_ID', id: created.id });
+      setAssessmentId(created.id);
     }
-    dispatch({ type: 'START' });
   }, []);
-
-  // Parameter submit: save to state + DB + notify Gemini
-  const handleParameterSubmit = useCallback(async (value: number) => {
-    if (!state.currentParameter || !state.assessmentId) return;
-    const key = state.currentParameter;
-    dispatch({ type: 'PARAMETER_COLLECTED', key, value });
-
-    // Tell Gemini the user submitted this value so it can acknowledge naturally
-    const unit = PARAMETER_UNITS[key];
-    sendMessage({ text: `${value}${unit}` });
-
-    const supabase = createClient();
-    const dbColumn = PARAMETER_KEY_TO_DB_COLUMN[key];
-    const { error } = await supabase
-      .from('assessments')
-      .update({ [dbColumn]: value, updated_at: new Date().toISOString() })
-      .eq('id', state.assessmentId);
-
-    if (error) console.error('Failed to save parameter:', error.message);
-  }, [state.currentParameter, state.assessmentId, sendMessage]);
-
-  // On completion: save messages + redirect
-  useEffect(() => {
-    if (!state.isComplete || !state.assessmentId) return;
-
-    setIsGeneratingReport(true);
-
-    async function onComplete() {
-      await completeAssessment(state.assessmentId!);
-
-      const messagesToSave = messages.map(m => ({
-        role: m.role as 'user' | 'assistant',
-        content: m.parts
-          .filter(p => p.type === 'text')
-          .map(p => p.text)
-          .join(''),
-      }));
-
-      if (messagesToSave.length > 0) {
-        const saveResult = await saveChatMessages(state.assessmentId!, messagesToSave);
-        if ('error' in saveResult) {
-          console.error('Failed to save chat messages:', saveResult.error);
-        }
-      }
-
-      router.push('/result');
-    }
-
-    onComplete();
-  }, [state.isComplete, state.assessmentId, messages, router]);
 
   const handleSend = useCallback((e?: React.FormEvent) => {
     e?.preventDefault();
@@ -199,7 +176,16 @@ export function AssessmentChat() {
     setInput('');
   }, [input, status, sendMessage]);
 
-  // Session resume prompt UI
+  // Filter messages: hide init trigger and tool-only messages
+  const displayMessages = messages.filter(m => {
+    if (m.role === 'user') {
+      const text = m.parts.filter(p => p.type === 'text').map(p => p.text).join('');
+      if (text === INIT_TRIGGER) return false;
+    }
+    const textContent = m.parts.filter(p => p.type === 'text').map(p => p.text).join('').trim();
+    return textContent.length > 0;
+  });
+
   if (showResumePrompt) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-bg px-4">
@@ -254,6 +240,8 @@ export function AssessmentChat() {
     );
   }
 
+  const collectedCount = Object.keys(collected).length;
+
   return (
     <div className="flex-1 flex flex-col bg-bg relative">
       {/* Header */}
@@ -275,7 +263,7 @@ export function AssessmentChat() {
             <div
               key={key}
               className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                state.collected[key] !== undefined ? 'bg-accent' : 'bg-border-light'
+                collected[key] !== undefined ? 'bg-accent' : 'bg-border-light'
               }`}
             />
           ))}
@@ -284,42 +272,20 @@ export function AssessmentChat() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 scroll-smooth">
-        {state.assessmentId && (
-          <MessageBubble
-            role="assistant"
-            content={"你好！我是弘业坊的 AI 创业顾问。\n\n我将帮您完成创业适配度评估，只需了解 4 项关键信息，即可为您生成专属的创业画像与评分报告。\n\n我们现在开始第一项 👇"}
-          />
-        )}
-        {messages.map((m) => (
+        {displayMessages.map((m) => (
           <MessageBubble
             key={m.id}
             role={m.role === 'user' ? 'user' : 'assistant'}
-            content={m.parts
-              .filter((p) => p.type === 'text')
-              .map((p) => p.text)
-              .join('')}
+            content={m.parts.filter(p => p.type === 'text').map(p => p.text).join('')}
             isStreaming={status === 'streaming' && m.role === 'assistant'}
           />
         ))}
-
-        {state.currentParameter &&
-          state.collected[state.currentParameter] === undefined && (
-            <>
-              <MessageBubble
-                role="assistant"
-                content={PARAMETER_EXPLANATIONS[state.currentParameter]}
-              />
-              <ParameterCard
-                key={state.currentParameter}
-                parameterKey={state.currentParameter}
-                value={null}
-                onSubmit={handleParameterSubmit}
-              />
-            </>
-          )}
+        {status === 'streaming' && displayMessages.length > 0 && displayMessages[displayMessages.length - 1]?.role === 'user' && (
+          <MessageBubble role="assistant" content="" isStreaming />
+        )}
       </div>
 
-      {/* Input Area */}
+      {/* Input */}
       <div className="shrink-0 p-4 bg-surface border-t border-border">
         <ChatInput
           value={input}
