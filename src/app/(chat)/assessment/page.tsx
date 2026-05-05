@@ -3,8 +3,7 @@ import { redirect } from 'next/navigation';
 import { AssessmentChat } from '@/components/chat/AssessmentChat';
 import { NavHeader } from '@/components/ui/NavHeader';
 import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
-
-export const runtime = 'edge'
+import { BottomNav } from '@/components/ui/BottomNav';
 
 export default async function AssessmentPage() {
   const supabase = await createClient();
@@ -19,6 +18,7 @@ export default async function AssessmentPage() {
       <NavHeader userEmail={user.email} />
       <FunnelProgressBar currentStep={1} />
       <AssessmentChat />
+      <BottomNav />
     </div>
   );
 }

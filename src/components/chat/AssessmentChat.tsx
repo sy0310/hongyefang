@@ -28,6 +28,7 @@ const INIT_TRIGGER = '__start__';
 export function AssessmentChat() {
   const router = useRouter();
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
+  const [initError, setInitError] = useState(false);
   const [showResumePrompt, setShowResumePrompt] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -130,6 +131,8 @@ export function AssessmentChat() {
         const created = await createAssessment();
         if ('id' in created) {
           setAssessmentId(created.id);
+        } else {
+          setInitError(true);
         }
         return;
       }
@@ -186,9 +189,23 @@ export function AssessmentChat() {
     return textContent.length > 0;
   });
 
+  if (initError) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-bg px-4 pb-16 gap-4">
+        <p className="text-sm text-text/70 text-center">出现错误，请刷新页面重试</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2 bg-accent text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity"
+        >
+          刷新页面
+        </button>
+      </div>
+    );
+  }
+
   if (showResumePrompt) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-bg px-4">
+      <div className="flex-1 flex flex-col items-center justify-center bg-bg px-4 pb-16">
         <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm border border-border/50 p-8 text-center">
           <h2 className="text-xl font-bold text-text mb-2">继续上次对话？</h2>
           <p className="text-sm text-text/60 mb-6">
@@ -215,7 +232,7 @@ export function AssessmentChat() {
 
   if (isGeneratingReport) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-bg px-4 gap-6">
+      <div className="flex-1 flex flex-col items-center justify-center bg-bg px-4 pb-16 gap-6">
         <div className="relative w-20 h-20">
           <div className="absolute inset-0 rounded-full border-4 border-accent/20" />
           <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-accent animate-spin" />
@@ -243,7 +260,7 @@ export function AssessmentChat() {
   const collectedCount = Object.keys(collected).length;
 
   return (
-    <div className="flex-1 flex flex-col bg-bg relative">
+    <div className="flex-1 flex flex-col bg-bg relative pb-16">
       {/* Header */}
       <div className="shrink-0 px-6 py-4 border-b border-border bg-surface flex items-center justify-between z-10 shadow-sm">
         <div className="flex items-center gap-3">
@@ -280,6 +297,9 @@ export function AssessmentChat() {
             isStreaming={status === 'streaming' && m.role === 'assistant'}
           />
         ))}
+        {(status === 'streaming' || status === 'submitted') && displayMessages.length === 0 && (
+          <MessageBubble role="assistant" content="" isStreaming />
+        )}
         {status === 'streaming' && displayMessages.length > 0 && displayMessages[displayMessages.length - 1]?.role === 'user' && (
           <MessageBubble role="assistant" content="" isStreaming />
         )}
