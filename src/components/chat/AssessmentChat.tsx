@@ -68,6 +68,7 @@ export function AssessmentChat() {
 
   const { messages, sendMessage, status, addToolResult } = useChat<UIMessage>({
     transport: transportRef.current,
+    maxSteps: 10,
     onToolCall: async ({ toolCall }) => {
       if (toolCall.toolName === 'collectParameter') {
         const { key, value } = toolCall.input as { key: ParameterKey; value: number };
