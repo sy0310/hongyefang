@@ -79,9 +79,6 @@ export function AssessmentChat() {
     transport: transportRef.current,
   });
 
-  // Track whether we've sent the initial greeting to avoid double-send
-  const greetingSentRef = useRef(false);
-
   // Session resume: on mount, check for in-progress assessment
   useEffect(() => {
     async function checkResume() {
@@ -100,14 +97,6 @@ export function AssessmentChat() {
     }
     checkResume();
   }, []);
-
-  // Send initial greeting once assessmentId is set for a fresh session
-  useEffect(() => {
-    if (state.assessmentId && !showResumePrompt && !greetingSentRef.current && messages.length === 0) {
-      greetingSentRef.current = true;
-      sendMessage({ text: '你好，我准备好了，开始吧' });
-    }
-  }, [state.assessmentId, showResumePrompt, messages.length, sendMessage]);
 
   const handleResume = useCallback(() => {
     if (!restoredAssessment) return;
@@ -280,6 +269,12 @@ export function AssessmentChat() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 scroll-smooth">
+        {state.assessmentId && (
+          <MessageBubble
+            role="assistant"
+            content={"你好！我是弘业坊的 AI 创业顾问。\n\n我将帮您完成创业适配度评估，只需了解 4 项关键信息，即可为您生成专属的创业画像与评分报告。\n\n我们现在开始第一项 👇"}
+          />
+        )}
         {messages.map((m) => (
           <MessageBubble
             key={m.id}
