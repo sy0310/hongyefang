@@ -63,10 +63,11 @@ export function AssessmentChat() {
   if (!transportRef.current) {
     transportRef.current = new DefaultChatTransport<UIMessage>({
       api: '/api/chat',
-      prepareSendMessagesRequest: ({ body, ...req }) => ({
+      prepareSendMessagesRequest: ({ body, messages: msgs, ...req }) => ({
         ...req,
         body: {
           ...body,
+          messages: msgs,
           collected: collectedRef.current,
           currentParameter: currentParameterRef.current,
         },
