@@ -2,8 +2,6 @@ import { google } from '@ai-sdk/google';
 import { streamText, convertToModelMessages, type UIMessage } from 'ai';
 import { PARAMETER_ORDER, type ParameterKey } from '@/lib/chat/state-machine';
 
-export const runtime = 'edge';
-
 const PARAM_LABELS: Record<ParameterKey, string> = {
   annualCapital: '年度弹性资金（万元）',
   weeklyTime: '每周投入时间（小时/周）',

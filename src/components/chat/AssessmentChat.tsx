@@ -33,6 +33,7 @@ const PARAMETER_KEY_TO_DB_COLUMN: Record<ParameterKey, string> = {
 export function AssessmentChat() {
   const router = useRouter();
   const [showResumePrompt, setShowResumePrompt] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [input, setInput] = useState('');
   const [restoredAssessment, setRestoredAssessment] = useState<{
     id: string;
@@ -160,6 +161,8 @@ export function AssessmentChat() {
   useEffect(() => {
     if (!state.isComplete || !state.assessmentId) return;
 
+    setIsGeneratingReport(true);
+
     async function onComplete() {
       await completeAssessment(state.assessmentId!);
 
@@ -214,6 +217,33 @@ export function AssessmentChat() {
               重新开始
             </button>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isGeneratingReport) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-bg px-4 gap-6">
+        <div className="relative w-20 h-20">
+          <div className="absolute inset-0 rounded-full border-4 border-accent/20" />
+          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-accent animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Zap className="w-7 h-7 text-accent" />
+          </div>
+        </div>
+        <div className="text-center">
+          <p className="text-base font-semibold text-text mb-1">正在生成您的评估报告</p>
+          <p className="text-sm text-text-2">AI 顾问正在分析您的创业适配度，请稍候…</p>
+        </div>
+        <div className="flex gap-2">
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="w-2 h-2 rounded-full bg-accent animate-bounce"
+              style={{ animationDelay: `${i * 0.15}s` }}
+            />
+          ))}
         </div>
       </div>
     );
