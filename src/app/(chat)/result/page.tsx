@@ -6,6 +6,7 @@ import { ResultCTA } from '@/components/result/ResultCTA';
 import { computeSubScores } from '@/lib/scoring/engine';
 import { NavHeader } from '@/components/ui/NavHeader';
 import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
+import { BottomNav } from '@/components/ui/BottomNav';
 
 export const runtime = 'edge'
 
@@ -52,7 +53,7 @@ export default async function ResultPage() {
   });
 
   return (
-    <div className="flex-1 flex flex-col bg-bg overflow-y-auto">
+    <div className="flex-1 flex flex-col bg-bg overflow-y-auto pb-16">
       <NavHeader userEmail={user.email} />
       <FunnelProgressBar currentStep={2} />
 
@@ -97,6 +98,7 @@ export default async function ResultPage() {
           <ResultCTA isWishingType={assessment.is_wishing_type ?? false} tier={assessment.tier} />
         </section>
       </div>
+      <BottomNav />
     </div>
   );
 }

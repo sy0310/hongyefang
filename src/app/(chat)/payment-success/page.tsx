@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { QrCode } from 'lucide-react'
 import { NavHeader } from '@/components/ui/NavHeader';
 import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
+import { BottomNav } from '@/components/ui/BottomNav';
 
 export const runtime = 'edge'
 
@@ -44,7 +45,7 @@ export default async function PaymentSuccessPage({
   const shortOrderId = order.id.slice(0, 8).toUpperCase();
 
   return (
-    <div className="flex-1 flex flex-col bg-bg overflow-y-auto">
+    <div className="flex-1 flex flex-col bg-bg overflow-y-auto pb-16">
       <NavHeader userEmail={user.email} />
       <FunnelProgressBar currentStep={4} />
 
@@ -124,6 +125,7 @@ export default async function PaymentSuccessPage({
           </div>
         </div>
       </div>
+      <BottomNav />
     </div>
   );
 }

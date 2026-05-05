@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NavHeader } from '@/components/ui/NavHeader'
+import { BottomNav } from '@/components/ui/BottomNav'
 import Link from 'next/link'
 
 export const runtime = 'edge'
@@ -23,7 +24,7 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <div className="flex-1 flex flex-col bg-bg overflow-y-auto">
+    <div className="flex-1 flex flex-col bg-bg overflow-y-auto pb-16">
       <NavHeader userEmail={user?.email} />
 
       <div className="flex-1 p-7 flex flex-col gap-5">
@@ -160,6 +161,7 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+      <BottomNav />
     </div>
   )
 }

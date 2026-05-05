@@ -1,6 +1,7 @@
 import { ConsultClient } from './ConsultClient';
 import { NavHeader } from '@/components/ui/NavHeader';
 import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
+import { BottomNav } from '@/components/ui/BottomNav';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
@@ -51,7 +52,7 @@ export default async function ConsultPage() {
   if (!user) redirect('/login');
 
   return (
-    <div className="flex-1 flex flex-col bg-bg overflow-y-auto">
+    <div className="flex-1 flex flex-col bg-bg overflow-y-auto pb-16">
       <NavHeader userEmail={user.email} />
       <FunnelProgressBar currentStep={3} />
 
@@ -67,6 +68,7 @@ export default async function ConsultPage() {
           所有咨询均通过线上进行。支付完成后，专员将在24小时内联系您。
         </p>
       </div>
+      <BottomNav />
     </div>
   );
 }
