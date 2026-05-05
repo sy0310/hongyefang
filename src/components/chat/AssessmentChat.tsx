@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { useRouter } from 'next/navigation';
-import { DefaultChatTransport, type UIMessage } from 'ai';
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls, type UIMessage } from 'ai';
 import { PARAMETER_ORDER, type ParameterKey } from '@/lib/chat/state-machine';
 import { createClient } from '@/lib/supabase/client';
 import { MessageBubble } from '@/components/chat/MessageBubble';
@@ -68,7 +68,7 @@ export function AssessmentChat() {
 
   const { messages, sendMessage, status, addToolResult } = useChat<UIMessage>({
     transport: transportRef.current,
-    maxSteps: 10,
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     onToolCall: async ({ toolCall }) => {
       if (toolCall.toolName === 'collectParameter') {
         const { key, value } = toolCall.input as { key: ParameterKey; value: number };
