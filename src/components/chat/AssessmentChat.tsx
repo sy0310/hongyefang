@@ -265,19 +265,10 @@ export function AssessmentChat() {
           state.collected[state.currentParameter] === undefined && (
             <ParameterCard
               parameterKey={state.currentParameter}
-              value={state.collected[state.currentParameter] ?? null}
+              value={null}
               onSubmit={handleParameterSubmit}
             />
           )}
-
-        {Object.entries(state.collected).map(([key, value]) => (
-          <ParameterCard
-            key={key}
-            parameterKey={key as ParameterKey}
-            value={value}
-            onSubmit={() => {}}
-          />
-        ))}
       </div>
 
       {/* Input Area */}

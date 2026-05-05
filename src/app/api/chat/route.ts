@@ -46,15 +46,13 @@ ${collectedCount > 0 ? `已有数据：\n${collectedLines}\n` : ''}当前应询�
 export async function POST(req: Request) {
   const body = await req.json() as {
     messages: UIMessage[];
-    body?: {
-      collected?: Partial<Record<ParameterKey, number>>;
-      currentParameter?: ParameterKey | null;
-    };
+    collected?: Partial<Record<ParameterKey, number>>;
+    currentParameter?: ParameterKey | null;
   };
 
   const messages = body.messages;
-  const collected = body.body?.collected ?? {};
-  const currentParameter = body.body?.currentParameter ?? null;
+  const collected = body.collected ?? {};
+  const currentParameter = body.currentParameter ?? null;
 
   const result = streamText({
     model: google('gemini-2.0-flash'),
