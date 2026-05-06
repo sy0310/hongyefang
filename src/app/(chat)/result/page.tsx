@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { ScoreBanner } from '@/components/result/ScoreBanner';
 import { DimensionCard } from '@/components/result/DimensionCard';
 import { ResultCTA } from '@/components/result/ResultCTA';
+import { JoinPoolCTA } from '@/components/result/JoinPoolCTA';
 import { computeSubScores } from '@/lib/scoring/engine';
 import { NavHeader } from '@/components/ui/NavHeader';
 import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
@@ -36,7 +37,7 @@ export default async function ResultPage() {
 
   const { data: assessment } = await supabase
     .from('assessments')
-    .select('score, tier, is_wishing_type, ai_narrative, annual_capital, weekly_time, expected_return, investment_amount, industry_experience, monthly_debt')
+    .select('id, score, tier, is_wishing_type, ai_narrative, annual_capital, weekly_time, expected_return, investment_amount, industry_experience, monthly_debt')
     .eq('user_id', user.id)
     .eq('status', 'completed')
     .order('updated_at', { ascending: false })
@@ -46,6 +47,14 @@ export default async function ResultPage() {
   if (!assessment || !assessment.score || !assessment.tier) {
     redirect('/dashboard');
   }
+
+  const { data: poolProfile } = await supabase
+    .from('partner_profiles')
+    .select('id, is_active')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  const isInPool = poolProfile?.is_active === true;
 
   const subScores = computeSubScores({
     annualCapital: assessment.annual_capital,
@@ -100,6 +109,11 @@ export default async function ResultPage() {
             </p>
           )}
           <ResultCTA isWishingType={assessment.is_wishing_type ?? false} tier={assessment.tier} />
+        </section>
+
+        <section className="bg-surface rounded-[var(--radius)] border border-border-light shadow-sm p-6">
+          <h3 className="text-[15px] font-bold text-text mb-4">合伙人匹配</h3>
+          <JoinPoolCTA assessmentId={assessment.id} isInPool={isInPool} />
         </section>
       </div>
       <BottomNav />
