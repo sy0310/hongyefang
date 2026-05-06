@@ -21,6 +21,8 @@ export const PARAMETER_ORDER: ParameterKey[] = [
   'weeklyTime',
   'expectedReturn',
   'investmentAmount',
+  'industryExperience',
+  'debtPressure',
 ];
 
 export function conversationReducer(

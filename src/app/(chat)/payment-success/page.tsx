@@ -7,8 +7,6 @@ import { NavHeader } from '@/components/ui/NavHeader';
 import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
 import { BottomNav } from '@/components/ui/BottomNav';
 
-export const runtime = 'edge'
-
 interface PaymentSuccessPageProps {
   searchParams: Promise<{ id?: string }>;
 }

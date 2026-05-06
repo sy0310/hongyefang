@@ -1,4 +1,4 @@
-export type ParameterKey = 'annualCapital' | 'weeklyTime' | 'expectedReturn' | 'investmentAmount';
+export type ParameterKey = 'annualCapital' | 'weeklyTime' | 'expectedReturn' | 'investmentAmount' | 'industryExperience' | 'debtPressure';
 
 export type AssessmentStatus = 'in_progress' | 'completed';
 
@@ -9,8 +9,9 @@ export interface Assessment {
   weeklyTime: number | null;
   expectedReturn: number | null;
   investmentAmount: number | null;
+  industryExperience: number | null;
+  debtPressure: number | null;
   status: AssessmentStatus;
-  // Phase 3 additions:
   score: number | null;
   tier: Tier | null;
   isWishingType: boolean | null;
@@ -32,6 +33,8 @@ export const PARAMETER_LABELS: Record<ParameterKey, string> = {
   weeklyTime: '每周投入时间',
   expectedReturn: '预期年化回报',
   investmentAmount: '投入金额',
+  industryExperience: '行业经验',
+  debtPressure: '债务压力',
 };
 
 export const PARAMETER_UNITS: Record<ParameterKey, string> = {
@@ -39,9 +42,10 @@ export const PARAMETER_UNITS: Record<ParameterKey, string> = {
   weeklyTime: '小时',
   expectedReturn: '%',
   investmentAmount: '万元',
+  industryExperience: '年',
+  debtPressure: '万元/月',
 };
 
-// Phase 3 additions
 export type Tier = '高度适配' | '中度适配' | '需要准备';
 
 export interface ScoringInput {
@@ -49,6 +53,8 @@ export interface ScoringInput {
   weeklyTime: number | null;
   expectedReturn: number | null;
   investmentAmount: number | null;
+  industryExperience: number | null;
+  debtPressure: number | null;
 }
 
 export interface SubScores {
@@ -56,6 +62,8 @@ export interface SubScores {
   investmentAmount: number;
   weeklyTime: number;
   expectedReturn: number;
+  industryExperience: number;
+  debtPressure: number;
 }
 
 export interface ScoringResult {

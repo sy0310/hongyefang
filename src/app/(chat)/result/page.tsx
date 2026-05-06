@@ -8,13 +8,13 @@ import { NavHeader } from '@/components/ui/NavHeader';
 import { FunnelProgressBar } from '@/components/ui/FunnelProgressBar';
 import { BottomNav } from '@/components/ui/BottomNav';
 
-export const runtime = 'edge'
-
 const DIMENSION_CONFIG = [
-  { label: '弹性资金', dbField: 'annual_capital', maxScore: 400, goodTag: '充裕', moderateTag: '良好', lowTag: '偏低', veryLowTag: '不足' },
-  { label: '投入金额', dbField: 'investment_amount', maxScore: 300, goodTag: '充足', moderateTag: '适中', lowTag: '偏低', veryLowTag: '不足' },
-  { label: '投入时间', dbField: 'weekly_time', maxScore: 200, goodTag: '充分', moderateTag: '中等', lowTag: '有限', veryLowTag: '很少' },
+  { label: '弹性资金', dbField: 'annual_capital', maxScore: 250, goodTag: '充裕', moderateTag: '良好', lowTag: '偏低', veryLowTag: '不足' },
+  { label: '投入时间', dbField: 'weekly_time', maxScore: 250, goodTag: '充分', moderateTag: '中等', lowTag: '有限', veryLowTag: '很少' },
+  { label: '行业经验', dbField: 'industry_experience', maxScore: 200, goodTag: '资深', moderateTag: '一般', lowTag: '较少', veryLowTag: '无' },
+  { label: '投入金额', dbField: 'investment_amount', maxScore: 150, goodTag: '充足', moderateTag: '适中', lowTag: '偏低', veryLowTag: '不足' },
   { label: '预期回报', dbField: 'expected_return', maxScore: 100, goodTag: '合理', moderateTag: '偏高', lowTag: '过高', veryLowTag: '极高' },
+  { label: '债务压力', dbField: 'monthly_debt', maxScore: 50, goodTag: '无压力', moderateTag: '适中', lowTag: '较重', veryLowTag: '沉重' },
 ];
 
 const FIELD_TO_SUBSCORE_KEY: Record<string, string> = {
@@ -22,6 +22,8 @@ const FIELD_TO_SUBSCORE_KEY: Record<string, string> = {
   investment_amount: 'investmentAmount',
   weekly_time: 'weeklyTime',
   expected_return: 'expectedReturn',
+  industry_experience: 'industryExperience',
+  monthly_debt: 'debtPressure',
 };
 
 export default async function ResultPage() {
@@ -34,7 +36,7 @@ export default async function ResultPage() {
 
   const { data: assessment } = await supabase
     .from('assessments')
-    .select('score, tier, is_wishing_type, ai_narrative, annual_capital, weekly_time, expected_return, investment_amount')
+    .select('score, tier, is_wishing_type, ai_narrative, annual_capital, weekly_time, expected_return, investment_amount, industry_experience, monthly_debt')
     .eq('user_id', user.id)
     .eq('status', 'completed')
     .order('updated_at', { ascending: false })
@@ -50,6 +52,8 @@ export default async function ResultPage() {
     weeklyTime: assessment.weekly_time,
     expectedReturn: assessment.expected_return,
     investmentAmount: assessment.investment_amount,
+    industryExperience: assessment.industry_experience,
+    debtPressure: assessment.monthly_debt,
   });
 
   return (

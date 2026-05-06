@@ -21,6 +21,8 @@ const PARAMETER_KEY_TO_DB_COLUMN: Record<ParameterKey, string> = {
   weeklyTime: 'weekly_time',
   expectedReturn: 'expected_return',
   investmentAmount: 'investment_amount',
+  industryExperience: 'industry_experience',
+  debtPressure: 'monthly_debt',
 };
 
 const INIT_TRIGGER = '__start__';
@@ -40,6 +42,8 @@ export function AssessmentChat() {
     weekly_time: number | null;
     expected_return: number | null;
     investment_amount: number | null;
+    industry_experience: number | null;
+    monthly_debt: number | null;
   } | null>(null);
 
   const assessmentIdRef = useRef<string | null>(null);
@@ -160,6 +164,8 @@ export function AssessmentChat() {
     if (restoredAssessment.weekly_time !== null) restored.weeklyTime = restoredAssessment.weekly_time;
     if (restoredAssessment.expected_return !== null) restored.expectedReturn = restoredAssessment.expected_return;
     if (restoredAssessment.investment_amount !== null) restored.investmentAmount = restoredAssessment.investment_amount;
+    if (restoredAssessment.industry_experience !== null) restored.industryExperience = restoredAssessment.industry_experience;
+    if (restoredAssessment.monthly_debt !== null) restored.debtPressure = restoredAssessment.monthly_debt;
     setCollected(restored);
     setShowResumePrompt(false);
   }, [restoredAssessment]);

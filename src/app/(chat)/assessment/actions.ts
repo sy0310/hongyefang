@@ -37,6 +37,8 @@ export async function getInProgressAssessment(): Promise<{
     weekly_time: number | null;
     expected_return: number | null;
     investment_amount: number | null;
+    industry_experience: number | null;
+    monthly_debt: number | null;
   } | null;
 } | { error: string }> {
   const supabase = await createClient();
@@ -48,7 +50,7 @@ export async function getInProgressAssessment(): Promise<{
 
   const { data, error } = await supabase
     .from('assessments')
-    .select('id, annual_capital, weekly_time, expected_return, investment_amount')
+    .select('id, annual_capital, weekly_time, expected_return, investment_amount, industry_experience, monthly_debt')
     .eq('user_id', user.id)
     .eq('status', 'in_progress')
     .order('created_at', { ascending: false })
@@ -87,7 +89,7 @@ export async function completeAssessment(assessmentId: string): Promise<{ succes
 
   const { data: assessment, error: fetchError } = await supabase
     .from('assessments')
-    .select('annual_capital, weekly_time, expected_return, investment_amount')
+    .select('annual_capital, weekly_time, expected_return, investment_amount, industry_experience, monthly_debt')
     .eq('id', assessmentId)
     .eq('user_id', user.id)
     .single();
@@ -101,6 +103,8 @@ export async function completeAssessment(assessmentId: string): Promise<{ succes
     weeklyTime: assessment.weekly_time,
     expectedReturn: assessment.expected_return,
     investmentAmount: assessment.investment_amount,
+    industryExperience: assessment.industry_experience,
+    debtPressure: assessment.monthly_debt,
   });
 
   let aiNarrative: string;
@@ -120,6 +124,8 @@ export async function completeAssessment(assessmentId: string): Promise<{ succes
         weeklyTime: assessment.weekly_time,
         expectedReturn: assessment.expected_return,
         investmentAmount: assessment.investment_amount,
+        industryExperience: assessment.industry_experience,
+        debtPressure: assessment.monthly_debt,
       },
       scoring.tier,
       scoring.isWishingType

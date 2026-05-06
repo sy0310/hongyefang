@@ -3,8 +3,6 @@ import { NavHeader } from '@/components/ui/NavHeader'
 import { BottomNav } from '@/components/ui/BottomNav'
 import Link from 'next/link'
 
-export const runtime = 'edge'
-
 const FUNNEL_STEPS = [
   { label: 'AI 体检', desc: '智能收集画像', status: 'active', step: 1, href: '/assessment' },
   { label: '付费咨询', desc: '精准匹配顾问', status: 'available', step: 2, href: '/consult' },
