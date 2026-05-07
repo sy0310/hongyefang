@@ -13,6 +13,19 @@ export default async function AssessmentPage() {
     redirect('/login');
   }
 
+  // If user already has a completed assessment, show results
+  const { data: completed } = await supabase
+    .from('assessments')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('status', 'completed')
+    .limit(1)
+    .maybeSingle();
+
+  if (completed) {
+    redirect('/result');
+  }
+
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-bg">
       <NavHeader userEmail={user.email} />

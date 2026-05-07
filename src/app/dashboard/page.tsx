@@ -4,22 +4,42 @@ import { BottomNav } from '@/components/ui/BottomNav'
 import Link from 'next/link'
 
 const FUNNEL_STEPS = [
-  { label: 'AI 体检', desc: '智能收集画像', status: 'active', step: 1, href: '/assessment' },
-  { label: '付费咨询', desc: '精准匹配顾问', status: 'available', step: 2, href: '/consult' },
-  { label: 'DIY 交付', desc: '标准资料包', status: 'locked', step: 3, href: '#' },
-  { label: '全权托管', desc: '深度介入', status: 'locked', step: 4, href: '#' },
-  { label: '代运营', desc: '规模化扩张', status: 'locked', step: 5, href: '#' },
-]
-
-const STATS = [
-  { label: '体检次数', value: '1', icon: '📋' },
-  { label: '综合评分', value: '—', icon: '⭐' },
-  { label: '评估等级', value: '待评估', icon: '🎯' },
+  { label: 'AI 体检', desc: '智能收集画像', step: 1, href: '/assessment' },
+  { label: '付费咨询', desc: '精准匹配顾问', step: 2, href: '/consult' },
+  { label: 'DIY 交付', desc: '标准资料包', step: 3, href: '#' },
+  { label: '全权托管', desc: '深度介入', step: 4, href: '#' },
+  { label: '代运营', desc: '规模化扩张', step: 5, href: '#' },
 ]
 
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  const { data: latestAssessment } = await supabase
+    .from('assessments')
+    .select('score, tier, status')
+    .eq('user_id', user?.id ?? '')
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  const assessmentCount = latestAssessment ? 1 : 0
+  const hasCompleted = latestAssessment?.status === 'completed'
+
+  const STATS = [
+    { label: '体检次数', value: assessmentCount > 0 ? String(assessmentCount) : '0', icon: '📋' },
+    { label: '综合评分', value: hasCompleted && latestAssessment?.score != null ? String(latestAssessment.score) : '—', icon: '⭐' },
+    { label: '评估等级', value: hasCompleted && latestAssessment?.tier ? latestAssessment.tier : '待评估', icon: '🎯' },
+  ]
+
+  const funnelSteps = FUNNEL_STEPS.map((step) => ({
+    ...step,
+    status: step.step === 1
+      ? (hasCompleted ? 'done' : 'active')
+      : step.step === 2
+      ? (hasCompleted ? 'available' : 'locked')
+      : 'locked',
+  }))
 
   return (
     <div className="flex-1 flex flex-col bg-bg overflow-y-auto pb-16">
@@ -60,14 +80,16 @@ export default async function DashboardPage() {
             <div className="flex-1">
               <h2 className="text-[17px] font-bold text-text mb-2">AI 创业体检</h2>
               <p className="text-[13px] text-text-2 leading-relaxed mb-5" style={{ maxWidth: 280 }}>
-                通过 AI 对话收集您的资金状况、时间投入、预期回报，生成精准创业适配评估报告。
+                {hasCompleted
+                  ? '您的创业体检已完成，查看评估报告了解详细分析。'
+                  : '通过 AI 对话收集您的资金状况、时间投入、预期回报，生成精准创业适配评估报告。'}
               </p>
               <Link
-                href="/assessment"
+                href={hasCompleted ? '/result' : '/assessment'}
                 className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-[var(--radius-sm)] bg-accent text-white text-[14px] font-medium hover:opacity-90 transition-opacity"
                 style={{ boxShadow: '0 2px 8px oklch(52% 0.19 32 / 0.28)' }}
               >
-                开始体检
+                {hasCompleted ? '查看报告' : '开始体检'}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -89,10 +111,11 @@ export default async function DashboardPage() {
         <div className="bg-surface rounded-[var(--radius)] border border-border-light shadow-sm p-6">
           <h3 className="text-[15px] font-semibold text-text mb-4">服务漏斗</h3>
           <div className="flex flex-col gap-2">
-            {FUNNEL_STEPS.map((item) => {
+            {funnelSteps.map((item) => {
               const isActive = item.status === 'active'
               const isAvailable = item.status === 'available'
               const isLocked = item.status === 'locked'
+              const isDone = item.status === 'done'
 
               return (
                 <div
@@ -101,10 +124,12 @@ export default async function DashboardPage() {
                   style={{
                     background: isActive
                       ? 'var(--accent-light)'
+                      : isDone
+                      ? 'var(--green-light)'
                       : isAvailable
                       ? 'var(--green-light)'
                       : 'var(--surface-2)',
-                    border: `1px solid ${isActive ? 'oklch(88% 0.07 32)' : isAvailable ? 'oklch(88% 0.07 158)' : 'var(--border-light)'}`,
+                    border: `1px solid ${isActive ? 'oklch(88% 0.07 32)' : (isDone || isAvailable) ? 'oklch(88% 0.07 158)' : 'var(--border-light)'}`,
                   }}
                 >
                   <div
@@ -112,17 +137,23 @@ export default async function DashboardPage() {
                     style={{
                       background: isActive
                         ? 'var(--accent)'
-                        : isAvailable
+                        : (isDone || isAvailable)
                         ? 'var(--green)'
                         : 'var(--border)',
                     }}
                   >
-                    <span
-                      className="text-[12px] font-bold"
-                      style={{ color: isLocked ? 'var(--text-3)' : '#fff' }}
-                    >
-                      {item.step}
-                    </span>
+                    {isDone ? (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                        <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : (
+                      <span
+                        className="text-[12px] font-bold"
+                        style={{ color: isLocked ? 'var(--text-3)' : '#fff' }}
+                      >
+                        {item.step}
+                      </span>
+                    )}
                   </div>
                   <div className="flex-1">
                     <span
@@ -143,6 +174,15 @@ export default async function DashboardPage() {
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-semibold border" style={{ background: 'var(--accent-light)', color: 'var(--accent-text)', borderColor: 'oklch(88% 0.07 32)' }}>
                       进行中
                     </span>
+                  )}
+                  {isDone && (
+                    <Link
+                      href="/result"
+                      className="text-[12px] font-semibold hover:underline"
+                      style={{ color: 'var(--green-text)' }}
+                    >
+                      查看 →
+                    </Link>
                   )}
                   {isAvailable && (
                     <Link
