@@ -27,7 +27,11 @@ const PARAMETER_KEY_TO_DB_COLUMN: Record<ParameterKey, string> = {
 
 const INIT_TRIGGER = '__start__';
 
-export function AssessmentChat() {
+interface AssessmentChatProps {
+  hasCompletedAssessment?: boolean;
+}
+
+export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentChatProps) {
   const router = useRouter();
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
   const [initError, setInitError] = useState(false);
@@ -128,8 +132,22 @@ export function AssessmentChat() {
     finish();
   }, [isComplete, assessmentId, messages, router]);
 
-  // Session resume check on mount
+  const [showRetakePrompt, setShowRetakePrompt] = useState(hasCompletedAssessment);
+
+  const handleRetake = useCallback(async () => {
+    setShowRetakePrompt(false);
+    const created = await createAssessment();
+    if ('id' in created) {
+      setAssessmentId(created.id);
+    } else {
+      setInitError(true);
+    }
+  }, []);
+
+  // Session resume check on mount — skip if showing retake prompt
   useEffect(() => {
+    if (hasCompletedAssessment) return;
+
     async function checkResume() {
       const result = await getInProgressAssessment();
       if ('error' in result || !result.assessment) {
@@ -145,7 +163,7 @@ export function AssessmentChat() {
       setShowResumePrompt(true);
     }
     checkResume();
-  }, []);
+  }, [hasCompletedAssessment]);
 
   // Send init trigger once session is ready
   useEffect(() => {
@@ -195,6 +213,36 @@ export function AssessmentChat() {
     const textContent = m.parts.filter(p => p.type === 'text').map(p => p.text).join('').trim();
     return textContent.length > 0;
   });
+
+  if (showRetakePrompt) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-bg px-4 pb-16">
+        <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm border border-border/50 p-8 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
+            <Zap className="text-accent w-6 h-6" />
+          </div>
+          <h2 className="text-xl font-bold text-text mb-2">您已完成创业体检</h2>
+          <p className="text-sm text-text/60 mb-6">
+            可以查看您的评估报告，或重新开始一次新的体检。
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => router.push('/result')}
+              className="px-6 py-2 bg-accent text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity"
+            >
+              查看报告
+            </button>
+            <button
+              onClick={handleRetake}
+              className="px-6 py-2 bg-text/5 text-text/70 text-sm font-semibold rounded-lg hover:bg-text/10 transition-colors"
+            >
+              重新体检
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (initError) {
     return (

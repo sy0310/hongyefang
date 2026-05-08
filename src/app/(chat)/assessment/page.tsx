@@ -13,7 +13,6 @@ export default async function AssessmentPage() {
     redirect('/login');
   }
 
-  // If user already has a completed assessment, show results
   const { data: completed } = await supabase
     .from('assessments')
     .select('id')
@@ -22,15 +21,11 @@ export default async function AssessmentPage() {
     .limit(1)
     .maybeSingle();
 
-  if (completed) {
-    redirect('/result');
-  }
-
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-bg">
       <NavHeader userEmail={user.email} />
       <FunnelProgressBar currentStep={1} />
-      <AssessmentChat />
+      <AssessmentChat hasCompletedAssessment={!!completed} />
       <BottomNav />
     </div>
   );
