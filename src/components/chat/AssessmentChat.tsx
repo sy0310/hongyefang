@@ -59,11 +59,23 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const addToolResultRef = useRef<((...args: any[]) => void) | null>(null);
 
+  const transportRef = useRef<DefaultChatTransport<UIMessage> | null>(null);
+  if (!transportRef.current) {
+    transportRef.current = new DefaultChatTransport<UIMessage>({
+      api: '/api/chat',
+      prepareSendMessagesRequest: ({ body, messages: msgs, ...req }) => ({
+        ...req,
+        body: {
+          ...body,
+          messages: msgs,
+          collected: collectedRef.current,
+        },
+      }),
+    });
+  }
+
   const { messages, sendMessage, status, addToolResult } = useChat<UIMessage>({
-    api: '/api/chat',
-    body: {
-      collected: collected,
-    },
+    transport: transportRef.current,
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     onToolCall: async ({ toolCall }) => {
       if (toolCall.toolName === 'collectParameter') {
