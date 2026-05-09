@@ -112,7 +112,7 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
 
   // Completion effect: wait for stream to finish, then save messages + generate report + redirect
   useEffect(() => {
-    if (!isComplete || !assessmentId || status !== 'idle' || isCompletingRef.current) return;
+    if (!isComplete || !assessmentId || status === 'streaming' || status === 'submitted' || isCompletingRef.current) return;
 
     isCompletingRef.current = true;
     setIsGeneratingReport(true);
