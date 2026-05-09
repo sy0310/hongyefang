@@ -199,7 +199,7 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
 
   const handleSend = useCallback((e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!input.trim() || status === 'streaming') return;
+    if (!input.trim() || status !== 'idle') return;
     sendMessage({ text: input });
     setInput('');
   }, [input, status, sendMessage]);
@@ -366,7 +366,7 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onSubmit={handleSend}
-          isStreaming={status === 'streaming'}
+          isLoading={status === 'streaming' || status === 'submitted'}
         />
         <p className="text-[10px] text-text-2 text-center mt-3 italic">
           AI 正在根据您的输入构建创业画像，请确保数据真实性
