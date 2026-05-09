@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { logout } from '@/app/(auth)/login/actions';
 import { BottomNav } from '@/components/ui/BottomNav';
-import { User as UserIcon, LogOut, ChevronRight, Shield, Bell, CreditCard, HelpCircle } from 'lucide-react';
+import { User as UserIcon, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { ProfileClient } from '@/components/profile/ProfileClient';
 
 export const runtime = 'edge';
 
@@ -10,54 +11,32 @@ export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const menuItems = [
-    { icon: CreditCard, label: '我的订单', href: '#' },
-    { icon: Bell, label: '消息通知', href: '#' },
-    { icon: Shield, label: '账号安全', href: '#' },
-    { icon: HelpCircle, label: '帮助与反馈', href: '#' },
-  ];
-
   return (
-    <div className="flex-1 pb-24 bg-bg">
+    <div className="flex-1 pb-24 bg-bg min-h-screen">
       {/* Header */}
       <header className="px-6 pt-16 pb-8 bg-surface border-b border-border">
         <div className="flex flex-col items-center text-center">
-          <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mb-4 shadow-inner">
+          <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mb-4 shadow-inner border border-accent/5">
             <UserIcon className="text-accent w-10 h-10" />
           </div>
           <h1 className="text-xl font-black text-text uppercase tracking-tight mb-1">
             {user?.email?.split('@')[0] || '创业者'}
           </h1>
-          <p className="text-xs text-text-2 font-bold uppercase tracking-widest">
+          <p className="text-xs text-text-3 font-bold uppercase tracking-widest">
             {user?.email}
           </p>
         </div>
       </header>
 
-      {/* Menu List */}
-      <div className="px-6 py-8 space-y-3">
-        {menuItems.map((item, i) => (
-          <button
-            key={i}
-            className="w-full flex items-center justify-between p-5 bg-surface rounded-2xl border border-border transition-all active:scale-[0.98]"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-surface-2 flex items-center justify-center">
-                <item.icon size={20} className="text-text/70" />
-              </div>
-              <span className="text-[15px] font-bold text-text">{item.label}</span>
-            </div>
-            <ChevronRight size={18} className="text-text-2" />
-          </button>
-        ))}
-      </div>
+      {/* Menu List & Modals */}
+      <ProfileClient />
 
       {/* Logout Button */}
       <div className="px-6 mt-4">
         <form action={logout}>
           <Button
             variant="outline"
-            className="w-full py-4 text-red-600 border-red-100 hover:bg-red-50 hover:border-red-200 font-bold transition-colors"
+            className="w-full py-4 text-red-500 border-red-100 hover:bg-red-50 hover:border-red-200 font-bold transition-all active:scale-[0.99]"
           >
             <LogOut size={18} className="mr-2" />
             退出登录
