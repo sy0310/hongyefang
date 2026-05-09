@@ -222,10 +222,14 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
     e?.preventDefault();
     if (!input.trim() || isPending || status === 'streaming' || status === 'submitted') return;
     
+    const currentInput = input;
+    setInput('');
     setIsPending(true);
     try {
-      await sendMessage({ text: input });
-      setInput('');
+      await sendMessage({ text: currentInput });
+    } catch (error) {
+      setInput(currentInput);
+      console.error('Failed to send message:', error);
     } finally {
       setIsPending(false);
     }
