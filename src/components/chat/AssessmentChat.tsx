@@ -92,12 +92,12 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
         }
 
         const newCollected = { ...collectedRef.current, [key]: value };
+        collectedRef.current = newCollected;
         setCollected(newCollected);
 
         if (!isCompleteRef.current && Object.keys(newCollected).length >= PARAMETER_ORDER.length) {
           isCompleteRef.current = true;
           setIsComplete(true);
-          setIsGeneratingReport(true);
         }
 
         addToolResultRef.current?.({ toolCallId: toolCall.toolCallId, result: 'recorded' });
@@ -108,29 +108,39 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
   // Keep addToolResult ref up to date
   addToolResultRef.current = addToolResult;
 
-  // Completion effect: save messages + redirect
+  const isCompletingRef = useRef(false);
+
+  // Completion effect: wait for stream to finish, then save messages + generate report + redirect
   useEffect(() => {
-    if (!isComplete || !assessmentId) return;
+    if (!isComplete || !assessmentId || status !== 'idle' || isCompletingRef.current) return;
+
+    isCompletingRef.current = true;
+    setIsGeneratingReport(true);
 
     async function finish() {
-      await completeAssessment(assessmentId!);
+      try {
+        const messagesToSave = messages
+          .map(m => ({
+            role: m.role as 'user' | 'assistant',
+            content: m.parts.filter(p => p.type === 'text').map(p => p.text).join(''),
+          }))
+          .filter(m => m.content.trim() && m.role !== 'tool' as string);
 
-      const messagesToSave = messages
-        .map(m => ({
-          role: m.role as 'user' | 'assistant',
-          content: m.parts.filter(p => p.type === 'text').map(p => p.text).join(''),
-        }))
-        .filter(m => m.content.trim() && m.role !== 'tool' as string);
+        if (messagesToSave.length > 0) {
+          await saveChatMessages(assessmentId!, messagesToSave);
+        }
 
-      if (messagesToSave.length > 0) {
-        await saveChatMessages(assessmentId!, messagesToSave);
+        await completeAssessment(assessmentId!);
+        router.push('/result');
+      } catch (e) {
+        console.error('Failed to complete assessment:', e);
+        isCompletingRef.current = false;
+        setIsGeneratingReport(false);
       }
-
-      router.push('/result');
     }
 
     finish();
-  }, [isComplete, assessmentId, messages, router]);
+  }, [isComplete, assessmentId, status, messages, router]);
 
   const [showRetakePrompt, setShowRetakePrompt] = useState(hasCompletedAssessment);
 
