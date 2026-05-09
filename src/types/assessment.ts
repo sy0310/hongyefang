@@ -1,4 +1,4 @@
-export type ParameterKey = 'annualCapital' | 'weeklyTime' | 'expectedReturn' | 'investmentAmount' | 'industryExperience' | 'debtPressure';
+export type ParameterKey = 'annualCapital' | 'weeklyTime' | 'expectedReturn' | 'investmentAmount' | 'industryExperience' | 'debtPressure' | 'targetIndustry' | 'handsOffPreference' | 'setupAversion';
 
 export type AssessmentStatus = 'in_progress' | 'completed';
 
@@ -11,6 +11,9 @@ export interface Assessment {
   investmentAmount: number | null;
   industryExperience: number | null;
   debtPressure: number | null;
+  targetIndustry: string | null;
+  handsOffPreference: number | null;
+  setupAversion: number | null;
   status: AssessmentStatus;
   score: number | null;
   tier: Tier | null;
@@ -35,6 +38,9 @@ export const PARAMETER_LABELS: Record<ParameterKey, string> = {
   investmentAmount: '投入金额',
   industryExperience: '行业经验',
   debtPressure: '债务压力',
+  targetIndustry: '意向方向',
+  handsOffPreference: '托管意愿度',
+  setupAversion: '筹备抗拒度',
 };
 
 export const PARAMETER_UNITS: Record<ParameterKey, string> = {
@@ -44,6 +50,9 @@ export const PARAMETER_UNITS: Record<ParameterKey, string> = {
   investmentAmount: '万元',
   industryExperience: '年',
   debtPressure: '万元/月',
+  targetIndustry: '',
+  handsOffPreference: '分',
+  setupAversion: '分',
 };
 
 export type Tier = '高度适配' | '中度适配' | '需要准备';
@@ -55,6 +64,8 @@ export interface ScoringInput {
   investmentAmount: number | null;
   industryExperience: number | null;
   debtPressure: number | null;
+  handsOffPreference?: number | null;
+  setupAversion?: number | null;
 }
 
 export interface SubScores {
@@ -64,6 +75,8 @@ export interface SubScores {
   expectedReturn: number;
   industryExperience: number;
   debtPressure: number;
+  handsOffPreference: number;
+  setupAversion: number;
 }
 
 export interface ScoringResult {

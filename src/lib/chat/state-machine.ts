@@ -2,7 +2,7 @@ export type { ParameterKey } from '@/types/assessment';
 import type { ParameterKey } from '@/types/assessment';
 
 export interface ConversationState {
-  collected: Partial<Record<ParameterKey, number>>;
+  collected: Partial<Record<ParameterKey, number | string>>;
   currentParameter: ParameterKey | null;
   followUpRounds: Record<ParameterKey, number>;
   assessmentId: string | null;
@@ -11,18 +11,21 @@ export interface ConversationState {
 
 export type ConversationAction =
   | { type: 'START' }
-  | { type: 'PARAMETER_COLLECTED'; key: ParameterKey; value: number }
+  | { type: 'PARAMETER_COLLECTED'; key: ParameterKey; value: number | string }
   | { type: 'FOLLOW_UP_USED'; key: ParameterKey }
   | { type: 'SET_ASSESEMENT_ID'; id: string }
   | { type: 'COMPLETE' };
 
 export const PARAMETER_ORDER: ParameterKey[] = [
+  'targetIndustry',
   'annualCapital',
   'weeklyTime',
   'expectedReturn',
   'investmentAmount',
   'industryExperience',
   'debtPressure',
+  'handsOffPreference',
+  'setupAversion',
 ];
 
 export function conversationReducer(

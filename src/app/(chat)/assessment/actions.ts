@@ -33,12 +33,15 @@ export async function createAssessment(): Promise<{ id: string } | { error: stri
 export async function getInProgressAssessment(): Promise<{
   assessment: {
     id: string;
+    target_industry: string | null;
     annual_capital: number | null;
     weekly_time: number | null;
     expected_return: number | null;
     investment_amount: number | null;
     industry_experience: number | null;
     monthly_debt: number | null;
+    hands_off_preference: number | null;
+    setup_aversion: number | null;
   } | null;
 } | { error: string }> {
   const supabase = await createClient();
@@ -50,7 +53,7 @@ export async function getInProgressAssessment(): Promise<{
 
   const { data, error } = await supabase
     .from('assessments')
-    .select('id, annual_capital, weekly_time, expected_return, investment_amount, industry_experience, monthly_debt')
+    .select('id, target_industry, annual_capital, weekly_time, expected_return, investment_amount, industry_experience, monthly_debt, hands_off_preference, setup_aversion')
     .eq('user_id', user.id)
     .eq('status', 'in_progress')
     .order('created_at', { ascending: false })
@@ -89,7 +92,7 @@ export async function completeAssessment(assessmentId: string): Promise<{ succes
 
   const { data: assessment, error: fetchError } = await supabase
     .from('assessments')
-    .select('annual_capital, weekly_time, expected_return, investment_amount, industry_experience, monthly_debt')
+    .select('target_industry, annual_capital, weekly_time, expected_return, investment_amount, industry_experience, monthly_debt, hands_off_preference, setup_aversion')
     .eq('id', assessmentId)
     .eq('user_id', user.id)
     .single();
@@ -105,6 +108,8 @@ export async function completeAssessment(assessmentId: string): Promise<{ succes
     investmentAmount: assessment.investment_amount,
     industryExperience: assessment.industry_experience,
     debtPressure: assessment.monthly_debt,
+    handsOffPreference: assessment.hands_off_preference,
+    setupAversion: assessment.setup_aversion,
   });
 
   let aiNarrative: string;
@@ -120,12 +125,15 @@ export async function completeAssessment(assessmentId: string): Promise<{ succes
 
     const { system, user } = buildDeepSeekPrompt(
       {
+        targetIndustry: assessment.target_industry,
         annualCapital: assessment.annual_capital,
         weeklyTime: assessment.weekly_time,
         expectedReturn: assessment.expected_return,
         investmentAmount: assessment.investment_amount,
         industryExperience: assessment.industry_experience,
         debtPressure: assessment.monthly_debt,
+        handsOffPreference: assessment.hands_off_preference,
+        setupAversion: assessment.setup_aversion,
       },
       scoring.tier,
       scoring.isWishingType

@@ -1,12 +1,15 @@
 import type { Tier } from '@/types/assessment';
 
 export interface DeepSeekPromptInput {
+  targetIndustry: string | null;
   annualCapital: number | null;
   weeklyTime: number | null;
   expectedReturn: number | null;
   investmentAmount: number | null;
   industryExperience: number | null;
   debtPressure: number | null;
+  handsOffPreference: number | null;
+  setupAversion: number | null;
 }
 
 export function buildDeepSeekPrompt(
@@ -14,12 +17,15 @@ export function buildDeepSeekPrompt(
   tier: Tier,
   isWishingType: boolean
 ): { system: string; user: string } {
+  const targetIndustry = params.targetIndustry ?? '未指定';
   const annualCapital = params.annualCapital ?? 0;
   const weeklyTime = params.weeklyTime ?? 0;
   const expectedReturn = params.expectedReturn ?? 0;
   const investmentAmount = params.investmentAmount ?? 0;
   const industryExperience = params.industryExperience ?? 0;
   const debtPressure = params.debtPressure ?? 0;
+  const handsOffPreference = params.handsOffPreference ?? 1;
+  const setupAversion = params.setupAversion ?? 1;
 
   let system: string;
 
@@ -36,21 +42,25 @@ export function buildDeepSeekPrompt(
   const experienceDesc = industryExperience === 0 ? '暂无相关行业经验' : `${industryExperience}年`;
   const debtDesc = debtPressure === 0 ? '无债务压力' : `${debtPressure}万元/月`;
 
-  const user = `请根据以下用户的创业评估数据，生成一段3-5句话的个性化评估叙述段落：
+const user = `请根据以下用户的副业评估数据，生成一段3-5句话的个性化评估叙述段落：
 
 【用户数据】
+- 意向副业方向：${targetIndustry}
 - 年度弹性资金：${annualCapital}万元
 - 每周可投入时间：${weeklyTime}小时
 - 行业经验：${experienceDesc}
 - 月均债务：${debtDesc}
 - 预期年化回报率：${expectedReturn}%
 - 投入金额：${investmentAmount}万元
+- 托管意愿度：${handsOffPreference}/10（10为极度希望完全托管）
+- 前期筹备抗拒度：${setupAversion}/10（10为极度头疼前期办理工作）
 
 要求：
-1. 引用至少一项用户的具体数据，使叙述个性化
-2. 不要直接引用综合评分数字（评分已在页面上方展示）
-3. 语言自然流畅，不分点列举
-4. 控制在3-5句话`;
+1. 如果用户抗拒前期筹备或想托管，强调我们 0-60分代办及B端资源对接 的优势
+2. 引用至少一项用户的具体数据，使叙述个性化
+3. 不要直接引用综合评分数字（评分已在页面上方展示）
+4. 语言自然流畅，像资深合伙人的口吻，不分点列举
+5. 控制在3-5句话`;
 
   return { system, user };
 }

@@ -17,12 +17,15 @@ import {
 import { Zap } from 'lucide-react';
 
 const PARAMETER_KEY_TO_DB_COLUMN: Record<ParameterKey, string> = {
+  targetIndustry: 'target_industry',
   annualCapital: 'annual_capital',
   weeklyTime: 'weekly_time',
   expectedReturn: 'expected_return',
   investmentAmount: 'investment_amount',
   industryExperience: 'industry_experience',
   debtPressure: 'monthly_debt',
+  handsOffPreference: 'hands_off_preference',
+  setupAversion: 'setup_aversion',
 };
 
 const INIT_TRIGGER = '__start__';
@@ -38,16 +41,19 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
   const [showResumePrompt, setShowResumePrompt] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const [collected, setCollected] = useState<Partial<Record<ParameterKey, number>>>({});
+  const [collected, setCollected] = useState<Partial<Record<ParameterKey, number | string>>>({});
   const [input, setInput] = useState('');
   const [restoredAssessment, setRestoredAssessment] = useState<{
     id: string;
+    target_industry: string | null;
     annual_capital: number | null;
     weekly_time: number | null;
     expected_return: number | null;
     investment_amount: number | null;
     industry_experience: number | null;
     monthly_debt: number | null;
+    hands_off_preference: number | null;
+    setup_aversion: number | null;
   } | null>(null);
 
   const assessmentIdRef = useRef<string | null>(null);
@@ -79,7 +85,7 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     onToolCall: async ({ toolCall }) => {
       if (toolCall.toolName === 'collectParameter') {
-        const { key, value } = toolCall.input as { key: ParameterKey; value: number };
+        const { key, value } = toolCall.input as { key: ParameterKey; value: number | string };
 
         const aId = assessmentIdRef.current;
         if (aId) {
@@ -187,13 +193,16 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
     if (!restoredAssessment) return;
     setAssessmentId(restoredAssessment.id);
 
-    const restored: Partial<Record<ParameterKey, number>> = {};
+    const restored: Partial<Record<ParameterKey, number | string>> = {};
+    if (restoredAssessment.target_industry !== null) restored.targetIndustry = restoredAssessment.target_industry;
     if (restoredAssessment.annual_capital !== null) restored.annualCapital = restoredAssessment.annual_capital;
     if (restoredAssessment.weekly_time !== null) restored.weeklyTime = restoredAssessment.weekly_time;
     if (restoredAssessment.expected_return !== null) restored.expectedReturn = restoredAssessment.expected_return;
     if (restoredAssessment.investment_amount !== null) restored.investmentAmount = restoredAssessment.investment_amount;
     if (restoredAssessment.industry_experience !== null) restored.industryExperience = restoredAssessment.industry_experience;
     if (restoredAssessment.monthly_debt !== null) restored.debtPressure = restoredAssessment.monthly_debt;
+    if (restoredAssessment.hands_off_preference !== null) restored.handsOffPreference = restoredAssessment.hands_off_preference;
+    if (restoredAssessment.setup_aversion !== null) restored.setupAversion = restoredAssessment.setup_aversion;
     setCollected(restored);
     setShowResumePrompt(false);
   }, [restoredAssessment]);
