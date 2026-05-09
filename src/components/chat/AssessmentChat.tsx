@@ -199,7 +199,7 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
 
   const handleSend = useCallback((e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!input.trim() || status !== 'idle') return;
+    if (!input.trim() || status === 'streaming' || status === 'submitted') return;
     sendMessage({ text: input });
     setInput('');
   }, [input, status, sendMessage]);
