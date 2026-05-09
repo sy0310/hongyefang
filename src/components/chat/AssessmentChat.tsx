@@ -59,23 +59,11 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const addToolResultRef = useRef<((...args: any[]) => void) | null>(null);
 
-  const transportRef = useRef<DefaultChatTransport<UIMessage> | null>(null);
-  if (!transportRef.current) {
-    transportRef.current = new DefaultChatTransport<UIMessage>({
-      api: '/api/chat',
-      prepareSendMessagesRequest: ({ body, messages: msgs, ...req }) => ({
-        ...req,
-        body: {
-          ...body,
-          messages: msgs,
-          collected: collectedRef.current,
-        },
-      }),
-    });
-  }
-
   const { messages, sendMessage, status, addToolResult } = useChat<UIMessage>({
-    transport: transportRef.current,
+    api: '/api/chat',
+    body: {
+      collected: collected,
+    },
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     onToolCall: async ({ toolCall }) => {
       if (toolCall.toolName === 'collectParameter') {
@@ -100,7 +88,7 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
           setIsGeneratingReport(true);
         }
 
-        addToolResultRef.current?.({ tool: 'collectParameter', toolCallId: toolCall.toolCallId, output: 'recorded' });
+        addToolResultRef.current?.({ toolCallId: toolCall.toolCallId, result: 'recorded' });
       }
     },
   });
@@ -197,12 +185,20 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
     }
   }, []);
 
-  const handleSend = useCallback((e?: React.FormEvent) => {
+  const [isPending, setIsPending] = useState(false);
+
+  const handleSend = useCallback(async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!input.trim() || status === 'streaming' || status === 'submitted') return;
-    sendMessage({ text: input });
-    setInput('');
-  }, [input, status, sendMessage]);
+    if (!input.trim() || isPending || status === 'streaming' || status === 'submitted') return;
+    
+    setIsPending(true);
+    try {
+      await sendMessage({ text: input });
+      setInput('');
+    } finally {
+      setIsPending(false);
+    }
+  }, [input, isPending, status, sendMessage]);
 
   // Filter messages: hide init trigger and tool-only messages
   const displayMessages = messages.filter(m => {
@@ -366,7 +362,7 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onSubmit={handleSend}
-          isLoading={status === 'streaming' || status === 'submitted'}
+          isLoading={isPending || status === 'streaming' || status === 'submitted'}
         />
         <p className="text-[10px] text-text-2 text-center mt-3 italic">
           AI 正在根据您的输入构建创业画像，请确保数据真实性
