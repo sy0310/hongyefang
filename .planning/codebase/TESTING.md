@@ -1,52 +1,145 @@
-# Testing
+# Testing Patterns
 
-**Last updated:** 2026-04-29
+**Analysis Date:** 2026-05-17
 
-## Status: No Testing Infrastructure
+## Test Framework
 
-No test framework is currently installed or configured in the project. This is a known gap across all phases.
+**Runner:** Vitest ^4.1.5 (installed as a devDependency)
 
-## Dependencies
+**Config:** `vitest.config.ts` at project root:
+```ts
+import { defineConfig } from 'vitest/config';
+export default defineConfig({
+  test: {
+    include: ['src/**/*.test.ts'],
+  },
+});
+```
 
-The project's `package.json` does not include any testing dependencies:
-- No Vitest
-- No Jest
-- No Playwright
-- No Testing Library
+Note: `.tsx` test files are not included by the current glob. Only `.ts` test files are picked up.
 
-## What Should Be Tested
+**Assertion library:** Vitest built-in (`expect`, `describe`, `it`)
 
-Based on the codebase analysis, these areas are testable:
+**Run commands:**
+```bash
+npx vitest            # run all tests
+npx vitest --watch    # watch mode
+npx vitest --coverage # coverage (no coverage provider configured yet)
+```
 
-### Unit Tests (candidates)
-| Module | What to Test | Framework Needed |
-|--------|-------------|-----------------|
-| `src/lib/chat/state-machine.ts` | State transitions, follow-up guard, completion detection | Vitest or Jest |
-| `src/lib/chat/mock-responses.ts` | Response selection logic per collected count | Vitest or Jest |
-| `src/lib/chat/validation.ts` | Zod schema boundaries (min/max) | Vitest or Jest |
-| `src/app/api/chat/route.ts` | Parameter detection, response routing | Vitest or Jest |
+No `test` script is defined in `package.json` — tests must be run via `npx vitest` directly.
 
-### Integration Tests (candidates)
-| Flow | What to Test | Framework Needed |
-|------|-------------|-----------------|
-| Auth Server Actions | login, register, logout flow | Playwright or Vitest + MSW |
-| Assessment creation | Server Action creates record with correct user_id | Playwright or Vitest |
-| Parameter real-time save | Browser client updates Supabase correctly | Playwright |
+## Test File Organization
 
-### E2E Tests (candidates)
-| Flow | What to Test | Framework Needed |
-|------|-------------|-----------------|
-| Login → Dashboard | Auth flow end-to-end | Playwright |
-| Dashboard → Assessment | Entry button navigates to chat | Playwright |
-| Assessment completion | All 4 params → redirect to /result | Playwright |
-| Session resume | Return to incomplete assessment | Playwright |
+**Location:** Co-located with the module under test.
 
-## Recommended Test Setup
+**Naming:** `<module>.test.ts` (e.g., `engine.test.ts` alongside `engine.ts`)
 
-- **Unit tests**: Vitest (fast, native TypeScript, Vite-compatible)
-- **E2E tests**: Playwright (project's standard per TypeScript testing rules)
-- **Test configuration**: Vitest config parallel to `tsconfig.json`
+**Current test file:** `src/lib/scoring/engine.test.ts`
 
-## Coverage Goal
+## Test Types Present
 
-Per project rules: minimum **80% coverage** for library code (`src/lib/`) and Server Actions.
+**Unit tests:** One file present, covering the scoring engine thoroughly.
+
+**Integration tests:** None.
+
+**E2E tests:** None.
+
+## Test Structure
+
+**Suite and case naming:**
+```ts
+describe('calculateScore', () => {
+  it('returns 高度适配 for a strong profile', () => { ... });
+  it('returns 1000 for maximum inputs', () => { ... });
+});
+
+describe('computeSubScores', () => {
+  it('matches calculateScore.subScores for same input', () => { ... });
+});
+```
+
+**AAA pattern followed:** Tests use Arrange (shared `STRONG_PROFILE` constant) / Act (`calculateScore(...)`) / Assert (`expect(result.score).toBe(...)`).
+
+**Shared fixtures:** Module-level constant `STRONG_PROFILE` used across multiple tests to avoid repetition:
+```ts
+const STRONG_PROFILE = {
+  annualCapital: 50,
+  weeklyTime: 40,
+  expectedReturn: 50,
+  investmentAmount: 30,
+  industryExperience: 5,
+  debtPressure: 0,
+};
+```
+
+**Spread overrides for variants:**
+```ts
+it('detects wishing type when expectedReturn > 500', () => {
+  const result = calculateScore({ ...STRONG_PROFILE, expectedReturn: 600 });
+  expect(result.isWishingType).toBe(true);
+});
+```
+
+## What Is Tested
+
+**`src/lib/scoring/engine.ts`** (`src/lib/scoring/engine.test.ts`):
+- `calculateScore`: tier assignments at all three thresholds, maximum inputs (score = 1000), null inputs (defaults), wishing-type flag detection, tier override when wishing-type, boundary exactness at 500% return, step-function boundary for `industryExperience`, debt pressure extremes
+- `computeSubScores`: verified to match `calculateScore.subScores` output
+- 11 test cases total
+
+## What Is Not Tested
+
+**All other lib modules:**
+- `src/lib/chat/state-machine.ts` — `conversationReducer` transitions, follow-up guard, completion detection
+- `src/lib/chat/validation.ts` — Zod schema min/max boundary correctness
+- `src/lib/match/algorithm.ts` — `complementarityScore`, label functions
+- `src/lib/chat/mock-responses.ts` — response selection logic
+- `src/lib/scoring/deepseek-prompt.ts` — prompt builder, fallback narrative
+
+**All Server Actions:**
+- `src/app/(chat)/assessment/actions.ts` — `createAssessment`, `completeAssessment`, `saveChatMessages`, `getInProgressAssessment`
+- `src/app/(auth)/login/actions.ts` — `login`, `register`, `logout`
+- `src/lib/orders/actions.ts`
+
+**All components:** No component tests exist. Chat flow, auth form behavior, result display, and session resume are untested.
+
+**All API routes:**
+- `src/app/api/chat/route.ts` — system prompt building, tool invocation
+
+**E2E flows:**
+- Login → Dashboard
+- Dashboard → Assessment → completion → /result redirect
+- Session resume for in-progress assessments
+- Payment modal interaction
+
+## Coverage
+
+No coverage provider is configured (no `@vitest/coverage-v8` or `@vitest/coverage-istanbul` in devDependencies). Coverage cannot currently be measured.
+
+**Estimated actual coverage:** Very low. Only the scoring engine (`src/lib/scoring/engine.ts`, 115 lines) is tested. All Server Actions, components, API routes, and other lib modules are uncovered.
+
+**Target per project rules:** Minimum 80% for library code (`src/lib/`) and Server Actions.
+
+## Mocking
+
+No mocking utilities configured or used in the existing test file. The scoring engine is pure functions with no external dependencies, so no mocks are needed.
+
+When testing Server Actions and API routes, the following will need to be mocked:
+- Supabase client (`@supabase/supabase-js`) — via `vi.mock`
+- AI SDK calls (`generateText`, `streamText`) — via `vi.mock`
+- Next.js navigation (`redirect`, `revalidatePath`) — via `vi.mock('next/navigation')`
+
+## Gaps to Address (Priority Order)
+
+1. **HIGH** — `src/lib/chat/state-machine.ts`: pure reducer with complex logic, zero test coverage
+2. **HIGH** — `src/lib/chat/validation.ts`: Zod schema boundaries untested
+3. **HIGH** — `src/app/(chat)/assessment/actions.ts`: core Server Actions covering data persistence
+4. **MEDIUM** — `src/lib/match/algorithm.ts`: scoring helpers and label functions
+5. **MEDIUM** — `src/lib/scoring/deepseek-prompt.ts`: prompt builder and fallback
+6. **LOW** — Component rendering tests (lower signal-to-noise for highly visual components)
+7. **LOW** — E2E flows with Playwright (requires environment with Supabase available)
+
+---
+
+*Testing analysis: 2026-05-17*

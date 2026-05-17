@@ -1,69 +1,81 @@
 # Technology Stack
 
-**Last updated:** 2026-04-29
+**Analysis Date:** 2026-05-17
 
 ## Languages
 
-| Language | Version | Usage |
-|----------|---------|-------|
-| TypeScript | ^5 | Primary language — all source files |
-| Node.js | v25.8.2 | Runtime (local dev) |
-| SQL | — | Supabase migrations |
+**Primary:**
+- TypeScript 5.x — all application code (`src/**/*.ts`, `src/**/*.tsx`)
 
-## Runtime & Framework
+**Secondary:**
+- SQL — database schema and migrations (`supabase/migrations/`)
 
-| Component | Version | Purpose |
-|-----------|---------|---------|
-| Next.js | 16.2.4 | Full-stack React framework with App Router |
-| React | 19.2.4 | UI library |
-| Turbopack | (Next.js default) | Dev server bundler |
+## Runtime
 
-Next.js uses `strict` TypeScript mode with `bundler` module resolution and `@/*` path alias mapping to `./src/*`.
+**Environment:**
+- Node.js >=18 (runtime constraint from dependencies; local dev runs v25.8.2)
 
-## Core Dependencies
+**Package Manager:**
+- npm
+- Lockfile: `package-lock.json` present
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `@supabase/ssr` | ^0.10.2 | Supabase SSR authentication — three-file pattern (client, server, middleware) |
-| `@supabase/supabase-js` | ^2.105.0 | Supabase database client |
-| `ai` | ^6.0.168 | AI SDK core — `streamText`, `MockLanguageModelV4`, `simulateReadableStream` |
-| `@ai-sdk/react` | ^3.0.170 | React bindings — `useChat` hook for streaming chat |
-| `zod` | ^4.3.6 | Schema validation — parameter card inputs |
-| `lucide-react` | ^1.11.0 | Icon set for chat UI |
+## Frameworks
 
-## Dev Dependencies
+**Core:**
+- Next.js 16.2.4 — full-stack React framework (App Router, Server Actions, Route Handlers, Middleware)
+- React 19.2.4 — UI rendering
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `typescript` | ^5 | Type checking |
-| `tailwindcss` | ^4 | CSS framework (CSS-first config, no `tailwind.config.js`) |
-| `@tailwindcss/postcss` | ^4 | PostCSS plugin for Tailwind v4 |
-| `eslint` | ^9 | Linting |
-| `eslint-config-next` | 16.2.4 | Next.js ESLint config |
-| `@types/react` | ^19 | React type definitions |
-| `@types/react-dom` | ^19 | React DOM type definitions |
-| `@types/node` | ^20 | Node.js type definitions |
+**Testing:**
+- Vitest 4.1.5 — unit test runner; config at `vitest.config.ts`; runs files matching `src/**/*.test.ts`
 
-## Configuration Files
+**Build/Dev:**
+- Tailwind CSS 4.x — utility-first styling (v4 CSS-first API via `@import "tailwindcss"` in `src/app/globals.css`)
+- PostCSS — via `@tailwindcss/postcss` (`postcss.config.mjs`)
+- ESLint 9 — linting via `eslint-config-next` (core-web-vitals + typescript presets); config at `eslint.config.mjs`
 
-| File | Purpose |
-|------|---------|
-| `next.config.ts` | Next.js configuration (empty defaults) |
-| `tsconfig.json` | TypeScript config — strict mode, `@/*` alias |
-| `postcss.config.mjs` | PostCSS config with `@tailwindcss/postcss` and `tailwindcss` plugins |
-| `.env.local` | Local environment variables (Supabase URL + anon key) — gitignored |
-| `.env.local.example` | Template for environment variables — tracked in git |
-| `.eslintrc.json` / `eslint.config.*` | ESLint configuration (uses default Next.js config) |
+## Key Dependencies
 
-## Installation
+**Critical:**
+- `ai` 6.0.168 — Vercel AI SDK core (`streamText`, `generateText`, `tool`, `zodSchema`, `UIMessage`, `convertToModelMessages`, `toUIMessageStreamResponse`)
+- `@ai-sdk/react` 3.0.170 — React bindings for streaming chat (`useChat` hook used in `src/components/chat/AssessmentChat.tsx`)
+- `@ai-sdk/google` 3.0.67 — Google Gemini provider (chat route uses `gemini-2.5-flash` model)
+- `@ai-sdk/deepseek` 2.0.31 — DeepSeek provider (dynamically imported in `src/app/(chat)/assessment/actions.ts` for narrative generation with `deepseek-v4-flash`)
+- `@supabase/supabase-js` 2.105.0 — Supabase JS client
+- `@supabase/ssr` 0.10.2 — Supabase SSR helpers for Next.js (browser + server clients, middleware session handling)
+- `zod` 4.3.6 — runtime schema validation (`zodSchema()` for AI tool input schemas)
+- `lucide-react` 1.11.0 — icon library
 
-```bash
-npm install    # Installs all dependencies from package.json
-npm run dev    # Starts Next.js dev server with Turbopack
-npm run build  # Production build
-npm run start  # Production server
-```
+**Infrastructure:**
+- `eslint-config-next` 16.2.4 — Next.js ESLint rule sets
 
-## No Test Framework Installed
+## Configuration
 
-No test runner (Vitest, Jest, Playwright) is currently installed. Testing infrastructure is a gap for all phases.
+**Environment:**
+- `.env.local` (gitignored) — runtime secrets
+- `.env.local.example` — documents required variables:
+  - `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL (client-safe)
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon key (client-safe)
+  - `DEEPSEEK_API_KEY` — DeepSeek API key (server-side only; falls back to static narrative if absent)
+  - `NEXT_PUBLIC_SITE_URL` — base URL for auth redirect (defaults to `http://localhost:3000`)
+
+**Build:**
+- `next.config.ts` — minimal config, no custom options currently set
+- `tsconfig.json` — strict mode, `bundler` moduleResolution, path alias `@/*` → `./src/*`, target ES2017
+- `postcss.config.mjs` — PostCSS with Tailwind v4
+
+## Platform Requirements
+
+**Development:**
+- Node.js >=18
+- Supabase project linked (ref: `nwloqvnsudjxbmymqzor`, project: `hongyefang`)
+- Valid Supabase credentials in `.env.local`
+- Optional: `DEEPSEEK_API_KEY` (assessment completion falls back to hardcoded narrative strings when absent)
+
+**Production:**
+- Deployment target: Not explicitly configured in codebase; standard Next.js output assumed (Vercel-compatible)
+- Auth callback route opts into Edge runtime (`export const runtime = 'edge'` in `src/app/auth/callback/route.ts`)
+- Google Gemini API key must be available to the server (no env var name documented; provider reads default `GOOGLE_GENERATIVE_AI_API_KEY`)
+
+---
+
+*Stack analysis: 2026-05-17*
