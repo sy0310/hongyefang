@@ -15,7 +15,10 @@ const PARAM_LABELS: Record<ParameterKey, string> = {
   setupAversion: '筹备抗拒度（1-10分）',
 };
 
-function buildSystemPrompt(collected: Partial<Record<ParameterKey, number | string>>): string {
+function buildSystemPrompt(
+  collected: Partial<Record<ParameterKey, number | string>>,
+  isFirstTurn: boolean
+): string {
   const collectedCount = Object.keys(collected).length;
   const remaining = PARAMETER_ORDER.filter(k => collected[k] === undefined);
 
@@ -37,7 +40,7 @@ ${collectedSection}
 3. 每周投入时间（小时/周）：每周能专注在项目上的时间
 4. 预期年化回报率（%）：对本次副业的年化收益预期
 5. 计划投资金额（万元）：准备投入的启动资金
-6. 行业经验年限（年）：在计划进入的行业中的相关工作经验（无经验填 0）
+6. 行业经验年限（年）：在计划进入 of 行业中的相关工作经验（无经验填 0）
 7. 月均债务压力（万元/月）：每月需偿还的贷款或债务总额（无债务填 0）
 8. 托管意愿度（1-10分）：倾向于亲力亲为还是做甩手掌柜（1=亲力亲为，10=只想投钱完全托管代运营）
 9. 筹备抗拒度（1-10分）：对办执照、找场地、装修等前期繁琐工作的头疼程度（1=喜欢自己折腾，10=极度头疼希望全包）
@@ -52,7 +55,7 @@ ${collectedSection}
 - 灵活应对追问、闲聊，但始终保持对评估主线的引导
 - 全部 9 项收集完成后，给用户一个温暖的总结，告知正在为您生成专属的资源对接及副业诊断报告。
 
-${collectedCount === 0 ? '【本次对话开始时】用 __start__ 触发，请立即以专业懂行的口吻开场，说明我们将帮他跨过0-60分的繁琐阶段，然后引出第一个问题。' : '【继续收集】根据已有信息，从下一个待收集项继续对话。'}`;
+${isFirstTurn ? '【本次对话开始时】用 __start__ 触发，请立即以专业懂行的口吻开场，说明我们将帮他跨过0-60分的繁琐阶段，然后引出第一个问题。' : '【继续收集】根据已有信息，从下一个待收集项继续对话。'}`;
 }
 
 export async function POST(req: Request) {
@@ -62,10 +65,11 @@ export async function POST(req: Request) {
   };
 
   const collected = body.collected ?? {};
+  const isFirstTurn = body.messages.length <= 1;
 
   const result = streamText({
     model: google('gemini-2.5-flash'),
-    system: buildSystemPrompt(collected),
+    system: buildSystemPrompt(collected, isFirstTurn),
     messages: await convertToModelMessages(body.messages),
     tools: {
       collectParameter: tool({
