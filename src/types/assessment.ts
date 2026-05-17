@@ -66,6 +66,7 @@ export interface ScoringInput {
   debtPressure: number | null;
   handsOffPreference?: number | null;
   setupAversion?: number | null;
+  targetIndustry?: string | null;
 }
 
 export interface SubScores {
@@ -77,6 +78,7 @@ export interface SubScores {
   debtPressure: number;
   handsOffPreference: number;
   setupAversion: number;
+  targetIndustryFit: number;
 }
 
 export interface ScoringResult {

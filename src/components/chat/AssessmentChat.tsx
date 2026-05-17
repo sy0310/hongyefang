@@ -101,7 +101,12 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
         collectedRef.current = newCollected;
         setCollected(newCollected);
 
-        if (!isCompleteRef.current && Object.keys(newCollected).length >= PARAMETER_ORDER.length) {
+        let shouldComplete = Object.keys(newCollected).length >= PARAMETER_ORDER.length;
+        if (key === 'expectedReturn' && typeof value === 'number' && value > 500) {
+          shouldComplete = true;
+        }
+
+        if (!isCompleteRef.current && shouldComplete) {
           isCompleteRef.current = true;
           setIsComplete(true);
         }

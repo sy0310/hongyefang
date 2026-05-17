@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { calculateScore } from '@/lib/scoring/engine';
-import { buildDeepSeekPrompt, getFallbackNarrative } from '@/lib/scoring/deepseek-prompt';
+import { buildAIPrompt, getFallbackNarrative } from '@/lib/scoring/ai-prompt';
 import { redirect } from 'next/navigation';
 
 export async function createAssessment(): Promise<{ id: string } | { error: string }> {
@@ -114,16 +114,10 @@ export async function completeAssessment(assessmentId: string): Promise<{ succes
 
   let aiNarrative: string;
   try {
-    if (!process.env.DEEPSEEK_API_KEY) {
-      throw new Error('DEEPSEEK_API_KEY not configured');
-    }
-
-    const { createDeepSeek } = await import('@ai-sdk/deepseek');
+    const { google } = await import('@ai-sdk/google');
     const { generateText } = await import('ai');
 
-    const deepseek = createDeepSeek({ apiKey: process.env.DEEPSEEK_API_KEY });
-
-    const { system, user } = buildDeepSeekPrompt(
+    const { system, user } = buildAIPrompt(
       {
         targetIndustry: assessment.target_industry,
         annualCapital: assessment.annual_capital,
@@ -140,7 +134,7 @@ export async function completeAssessment(assessmentId: string): Promise<{ succes
     );
 
     const { text } = await generateText({
-      model: deepseek('deepseek-v4-flash'),
+      model: google('gemini-2.5-flash'),
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: user },
@@ -148,7 +142,8 @@ export async function completeAssessment(assessmentId: string): Promise<{ succes
     });
 
     aiNarrative = text;
-  } catch {
+  } catch (error) {
+    console.error('Failed to generate AI narrative:', error);
     aiNarrative = getFallbackNarrative(scoring.tier, scoring.isWishingType);
   }
 

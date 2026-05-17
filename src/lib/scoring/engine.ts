@@ -61,6 +61,30 @@ function scoreSetupAversion(v: number): number {
   return Math.round(piecewise(v, [[1, 10], [5, 30], [8, 45], [10, 50]]));
 }
 
+// targetIndustryFit: adjusts score based on heavy/light asset vs available funds
+function scoreIndustryFit(industry: string | null, capital: number, investment: number): number {
+  if (!industry || industry === '暂无' || industry === '未知') return 0;
+  
+  const totalFunds = capital + investment;
+  const heavyKeywords = ['实体', '店', '餐饮', '厂', '重资产', '线下', '加盟'];
+  const lightKeywords = ['自媒体', '电商', '设计', '代运营', '轻资产', '线上', '网'];
+
+  const isHeavy = heavyKeywords.some(kw => industry.includes(kw));
+  const isLight = lightKeywords.some(kw => industry.includes(kw));
+
+  // If heavy asset but funds are very low (< 5w), huge mismatch (-50 pts)
+  if (isHeavy && totalFunds < 5) return -50;
+  // If heavy asset and funds are low (< 10w), moderate mismatch (-20 pts)
+  if (isHeavy && totalFunds < 10) return -20;
+  // If heavy asset and funds are sufficient, good fit
+  if (isHeavy && totalFunds >= 30) return 20;
+
+  // Light asset generally fits well with low funds
+  if (isLight) return 20;
+
+  return 0; // neutral
+}
+
 export function computeSubScores(input: ScoringInput): SubScores {
   const annualCapital = input.annualCapital ?? 0;
   const weeklyTime = input.weeklyTime ?? 0;
@@ -70,6 +94,7 @@ export function computeSubScores(input: ScoringInput): SubScores {
   const debtPressure = input.debtPressure ?? 0;
   const handsOffPreference = input.handsOffPreference ?? 1;
   const setupAversion = input.setupAversion ?? 1;
+  const targetIndustry = input.targetIndustry ?? null;
 
   return {
     annualCapital: scoreCapital(annualCapital),
@@ -80,6 +105,7 @@ export function computeSubScores(input: ScoringInput): SubScores {
     debtPressure: scoreDebt(debtPressure),
     handsOffPreference: scoreHandsOff(handsOffPreference),
     setupAversion: scoreSetupAversion(setupAversion),
+    targetIndustryFit: scoreIndustryFit(targetIndustry, annualCapital, investmentAmount),
   };
 }
 
@@ -97,7 +123,8 @@ export function calculateScore(input: ScoringInput): ScoringResult {
     subScores.expectedReturn +
     subScores.debtPressure +
     subScores.handsOffPreference +
-    subScores.setupAversion
+    subScores.setupAversion +
+    subScores.targetIndustryFit
   );
 
   let tier: ScoringResult['tier'];

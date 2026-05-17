@@ -1,6 +1,6 @@
 import type { Tier } from '@/types/assessment';
 
-export interface DeepSeekPromptInput {
+export interface AIPromptInput {
   targetIndustry: string | null;
   annualCapital: number | null;
   weeklyTime: number | null;
@@ -12,8 +12,8 @@ export interface DeepSeekPromptInput {
   setupAversion: number | null;
 }
 
-export function buildDeepSeekPrompt(
-  params: DeepSeekPromptInput,
+export function buildAIPrompt(
+  params: AIPromptInput,
   tier: Tier,
   isWishingType: boolean
 ): { system: string; user: string } {
