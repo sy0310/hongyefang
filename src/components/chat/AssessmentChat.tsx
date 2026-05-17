@@ -89,12 +89,23 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
 
         const aId = assessmentIdRef.current;
         if (aId) {
+          // Perform database update asynchronously in the background using an IIFE.
+          // This prevents database lag or network blockages from hanging the chat UI thread.
           const supabase = createClient();
           const dbCol = PARAMETER_KEY_TO_DB_COLUMN[key];
-          await supabase
-            .from('assessments')
-            .update({ [dbCol]: value, updated_at: new Date().toISOString() })
-            .eq('id', aId);
+          (async () => {
+            try {
+              const { error } = await supabase
+                .from('assessments')
+                .update({ [dbCol]: value, updated_at: new Date().toISOString() })
+                .eq('id', aId);
+              if (error) {
+                console.error('Supabase auto-save error:', error);
+              }
+            } catch (err) {
+              console.error('Supabase auto-save exception:', err);
+            }
+          })();
         }
 
         const newCollected = { ...collectedRef.current, [key]: value };
@@ -111,7 +122,11 @@ export function AssessmentChat({ hasCompletedAssessment = false }: AssessmentCha
           setIsComplete(true);
         }
 
-        addToolResultRef.current?.({ toolCallId: toolCall.toolCallId, result: 'recorded' });
+        try {
+          addToolResultRef.current?.({ toolCallId: toolCall.toolCallId, result: 'recorded' });
+        } catch (err) {
+          console.error('Failed to add tool result:', err);
+        }
       }
     },
   });
